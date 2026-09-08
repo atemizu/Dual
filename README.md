@@ -4,11 +4,11 @@
 
 **Heliumを改変した非公式派生版です。この改変部分はGPL-3.0で公開しています。imput LLC / Helium projectとは無関係の非公式プロジェクトであり、公式の製品・配布物・サポート窓口ではありません。**
 
-Dual is an unofficial modified version of Helium. The modifications are released under GNU GPL version 3 (GPL-3.0-only). This independent project is not affiliated with, sponsored by, or endorsed by imput LLC or the Helium project.
+macOS Apple Silicon向けに、左右それぞれ独立したBrowser・タブ一覧・アドレスバーを同じ外枠に収める変更です。左右はプロファイルを共有します。
 
 以前の開発名はHelium Dualです。既存のビルド手順・内部識別子・保存先には互換性のため旧名称が残ります。今回の公開プロジェクト名はDualです。
 
-macOS Apple Silicon向けに、左右それぞれ独立したBrowser・タブ一覧・アドレスバーを同じ外枠に収める変更です。左右はプロファイルを共有します。
+Dual is an unofficial modified version of Helium. The modifications are released under GNU GPL version 3 (GPL-3.0-only). This independent project is not affiliated with, sponsored by, or endorsed by imput LLC or the Helium project.
 
 - 機能改変日：**2026年9月8日**
 - 公開用のライセンス・改変表示・ドキュメント整備日：**2026年9月9日**
@@ -31,9 +31,7 @@ Helium固有のコード・改変部分には上流のGPL-3.0が適用されま�
 
 ## ロゴ・名称
 
-READMEのロゴはプロジェクト所有者が提供した独自画像です。Helium公式ロゴ、公式アプリアイコン、公式ブランド素材をこのリポジトリのロゴには使用していません。Heliumという名称は派生元の識別に用いています。商標の使用許諾や公式の承認を主張しません。
-
-画像そのものの再利用については[assets/NOTICE.md](assets/NOTICE.md)を参照してください。上流取得後のアプリ資源には上流ブランドが残るため、このソース公開の準備だけで、アプリの独自ブランド化まで完了したものとは扱いません。
+READMEのロゴは自作した独自画像です。
 
 上流への謝意：[Helium](https://github.com/imputnet/helium)、[Helium macOS](https://github.com/imputnet/helium-macos)、[ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium)、[Chromium](https://www.chromium.org/)。本プロジェクト固有の問題を上流の公式サポートへ転送しないでください。
 
