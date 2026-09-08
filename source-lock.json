@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "status": "source-delivery-sealed; browser build/runtime status recorded separately",
+  "helium_macos": {
+    "url": "https://github.com/imputnet/helium-macos.git",
+    "commit": "48498ad240ecb6580c5e37059878887fdb519d42"
+  },
+  "helium_chromium": {
+    "url": "https://github.com/imputnet/helium.git",
+    "commit": "f769d14398de5fd823b5c93b545842142d23784d"
+  },
+  "chromium": {
+    "version": "152.0.7977.82",
+    "archive": "chromium-152.0.7977.82-lite.tar.xz",
+    "url": "https://commondatastorage.googleapis.com/chromium-browser-official/chromium-152.0.7977.82-lite.tar.xz",
+    "sha256": "67ac37f365dfdac763c428862e5e460e5948940b3d6f856374da2ce219981417",
+    "bytes": 1774798136
+  },
+  "fixture_overlay": {
+    "path": "fixtures/original-test-inputs.tar.gz",
+    "files": 1270,
+    "unpacked_bytes": 12331656,
+    "sha256": "3769ba84f1df961daec52d48ad9c29e2c179f58e4a397cad0cdc884d0dffab52",
+    "compressed_bytes": 1853740
+  },
+  "local_patch": {
+    "path": "helium-dual-window.patch",
+    "sha256": "759c73e0185b9cf451843f9724e0a48e3a3dd77cc83e93347e909a55eb75d219"
+  },
+  "target": "macOS arm64 component development build",
+  "bundle_id": "local.heliumdual.browser",
+  "automatic_updaters": {
+    "enable_updater": false,
+    "enable_sparkle": false
+  },
+  "python": {
+    "version_observed": "3.13.5",
+    "packages": {
+      "httplib2": "0.22.0",
+      "requests": "2.34.2",
+      "pillow": "12.3.0",
+      "certifi": "2026.7.22"
+    }
+  },
+  "tool_versions_observed": {
+    "coreutils": "9.11",
+    "quilt": "0.69",
+    "ninja": "1.13.2",
+    "gnu-sed": "4.10",
+    "gpatch": "2.8",
+    "diffutils": "3.12"
+  },
+  "xcode_observed": {
+    "version": "26.6",
+    "build": "17F113",
+    "sdk": "26.5"
+  },
+  "publication_date": "2026-09-09",
+  "previous_built_patch_sha256": "5cdc70edbc4f54eec336a41b47f13bc484ef89b84c430cc8f4685ef25ed49f51",
+  "delivery_files": {
+    ".gitattributes": "61c65b1613a8e381feaf5e17c1c26bfebc43ed4802727462b8afd97bc6974613",
+    ".gitignore": "6d9d82d402d53127a22fca0238493132040fca6096ae890cc8c92c410ed3c596",
+    "BUILDING.md": "80230d318cc63fd1cf1030627bc49dd9a5d1671aa5143f7e9217c00aba5bdbbf",
+    "LEGAL-REVIEW-ja.md": "eb75dcdc835b9b08a7af34335f80a393631ad01b2490f649215e0ac58da00885",
+    "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+    "MODIFICATIONS.md": "a70ef2ca6f424f5223de65064d63bbac2a430e766da54d98cf80bcfd8076406d",
+    "NOTICE.md": "ab6fdf781e1ddc0aca3a3c466fd6c74f7f70e9f78c3861a9ea8dce38b613977d",
+    "PUBLICATION-CHECKS.json": "90f699e47fcc6b99d39fb0ec5917c720192db85daad1dc60bf220f6423ebed8e",
+    "README.md": "fbc371c5ff93203ac137788a4a22ffb26082e7a8ee0bc7198bfbbf33ff232ef8",
+    "VALIDATION.md": "717d7935a1305277324ae3a8813122988069e1229cc2ef838adc66b2973e9622",
+    "actual-build-args.gn": "8d2e091f7dd2738e312159b64278e19336016a2951551c90a01a6286129c887e",
+    "args.gn": "458a650110a123d0997f54a9c7526c5be08c6d6620ba701fc4bd2da124cf3823",
+    "assets/NOTICE.md": "e4a8656b9ba79b2a09b090f09a5a1665f9842837ff32884980a1ac79e4bb7131",
+    "assets/logo.jpg": "d54d8c125299e0756901cafa3e5ed9a7fa9113216452658922274942bf739e4c",
+    "fixtures/original-test-inputs.manifest.json": "71549877d285db35877c5e78bc4029a99649e285238fa1bff939fc708b3a18ff",
+    "fixtures/original-test-inputs.tar.gz": "3769ba84f1df961daec52d48ad9c29e2c179f58e4a397cad0cdc884d0dffab52",
+    "helium-dual-window.patch": "759c73e0185b9cf451843f9724e0a48e3a3dd77cc83e93347e909a55eb75d219",
+    "licenses/Chromium-LICENSE.txt": "368cca1106be99d39ecd32a38d8305585d802a475effb66380b91ffc9bcf709b",
+    "licenses/Helium-GPL-3.0.txt": "7952925b3b9f6577548f235839d53694179d519cdf2af3b6fe996273cb239b2e",
+    "licenses/helium-macos-LICENSE.txt": "7952925b3b9f6577548f235839d53694179d519cdf2af3b6fe996273cb239b2e",
+    "licenses/helium-macos-LICENSE.ungoogled_chromium.txt": "8114c6a80331b11081dcccf6007f97cc53e811452a03412ad1b839f3e8caa55b",
+    "licenses/ungoogled-chromium.txt": "8114c6a80331b11081dcccf6007f97cc53e811452a03412ad1b839f3e8caa55b",
+    "modifications.json": "7b12d334531f1d7b7fb30448a4536ff7701c906c2f1977b2113db55dfd00badf",
+    "packaging/package_component.py": "a641f8bdca3f75a069edadbb941fe3dcdc9db6041064d9692fa178cf590926b2",
+    "python-requirements.txt": "649242a913c2a60d459ad0a74be390bd333515cb438b7762e9e3ab27bf7f3555",
+    "reproduce.py": "e8c93ecad3a3bd84a20d0acd75c1b63023a1a05bcb7b4bf20c573b22953cd1be",
+    "seal_delivery.py": "c54f64ce1499015d9af28610885eb9771cadf715c5dc707aa4a2cc4a92aa0f96"
+  }
+}

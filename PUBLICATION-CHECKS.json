@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "date": "2026-09-09",
+  "source_only": true,
+  "patch_files": 70,
+  "zero_fuzz_apply_and_all_file_matches": true,
+  "functional_code_unchanged_from_previous_build": true,
+  "upstream_notices_preserved": true,
+  "original_license_copies_byte_identical": true,
+  "gpl_full_text_byte_identical_to_gnu_download": true,
+  "logo_byte_identical_to_user_input": true,
+  "python_syntax": "PASS",
+  "xml_declaration_and_parse": "PASS",
+  "private_path_and_typical_secret_pattern_scan": "PASS; bounded pattern scan, not exhaustive secret detection",
+  "compiled_browser_rebuild": "NOT_RUN; publication annotations only",
+  "remote_publication": "Verified separately on GitHub after local checks",
+  "official_header_style": "PASS; CONTRIBUTING.md Code style and existing Helium patch template; 9 new local source files",
+  "public_repository_target": "atemizu/Dual"
+}

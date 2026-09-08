@@ -1,0 +1,6 @@
+* text=auto
+*.jpg binary
+*.gz binary
+*.patch text eol=lf
+# Unified patches contain required space-prefixed empty context lines.
+*.patch whitespace=-blank-at-eol

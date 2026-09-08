@@ -1,0 +1,19 @@
+# Local build products and private state
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+build/
+out/
+artifacts/
+*.app/
+*.dmg
+*.pkg
+*.dylib
+*.log
+profile/
+profiles/
+.env
+.env.*
+*.pem
+*.key

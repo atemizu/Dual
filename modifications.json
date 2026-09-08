@@ -1,0 +1,562 @@
+[
+  {
+    "path": "chrome/app/theme/chromium/BRANDING",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "009d00b595a968139e3ffc2467fc7eccd6f7ad809921c3547bfcbf4299b1678b",
+    "published_sha256": "009d00b595a968139e3ffc2467fc7eccd6f7ad809921c3547bfcbf4299b1678b"
+  },
+  {
+    "path": "chrome/browser/sessions/session_restore.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "d2f2c835150602dd5a2380fb7977f34bb3432f3af56889961a5b515d5b707df1",
+    "published_sha256": "da90752f6946bd2ad47cd98e58fba7de6a8869558fe03a640b11355d0fc36123"
+  },
+  {
+    "path": "chrome/browser/sessions/session_service.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "5eb71c185af6c78f22723fa9af02e78a82e5c722e7c4b3040b64e36d5f4a8522",
+    "published_sha256": "2cae560f6d17897de5fef3dd895ca059d6dd32a9c5a1d4f5ef1584b5ff643163"
+  },
+  {
+    "path": "chrome/browser/sessions/session_service.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "935deecafeee976bfe964fdaddc6d9094fa1a2be09e44365149316a092739979",
+    "published_sha256": "80c1aa7cb25fca91d8790f72688ac379c880c71c8ebc0642a1d63929c8997094"
+  },
+  {
+    "path": "chrome/browser/sessions/session_service_base.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "de8a1321c84061426066ef008cfd5fdc7998f463613f2d251f362e86e3f9c40c",
+    "published_sha256": "bbc7aedebbd2d1fa36c0154301a0dd9353c14b24184174b98c4ca82975279ebc"
+  },
+  {
+    "path": "chrome/browser/sessions/session_service_unittest.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "5ed325ff6f25100987692a3519e4296b29e534fc20cab480d2e4e4e654611ea7",
+    "published_sha256": "cc2882e09e9c563dd21f4f41209efb2b8ed04c6162fee1238cfd0db0c649b6cd"
+  },
+  {
+    "path": "chrome/browser/ui/BUILD.gn",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "14d83df2f4941b988d9c233be0c5c471db6d70d6932ef3ef2d241c5c383974bc",
+    "published_sha256": "86880c05138c72bad8ac6d72a24510c0b0b8da5da6b79aaade4f07624c6b4bb4"
+  },
+  {
+    "path": "chrome/browser/ui/browser.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "9b11bec248d9e8696161befc7122e8ce4dc17d997022ca31e6ec31d186493b0f",
+    "published_sha256": "0195aa317b164ba8ef9d3ed4eace382ffd1cb361dde4d8562935ae8e0a062c49"
+  },
+  {
+    "path": "chrome/browser/ui/browser.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "807ea26e965ed814b0397563183a16695eada958fba31a6c7244f564a8dd61dc",
+    "published_sha256": "275e7eb8f74c544321480b54b86621c8514fdb5748537cf32a7f811a45bc01e5"
+  },
+  {
+    "path": "chrome/browser/ui/browser_live_tab_context.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "4267a7fb631cbbb65a394500103fb8e638c16bbcb3c03ba83eff39dda3bc5539",
+    "published_sha256": "8dad2d83d240059d5857eb24fa0cb84b1751dda4be076f946cb1c4cd184d532a"
+  },
+  {
+    "path": "chrome/browser/ui/helium/helium_dual_browser_mac.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": true,
+    "prior_sha256": "6926461add4b3b9656461babbaf7d46568a406813c77ee7a523ba91ef1c87952",
+    "published_sha256": "3fdd8bb8196847de8d006f025a23dc4149fcc65ea3926a32d30747218b6b9926"
+  },
+  {
+    "path": "chrome/browser/ui/helium/helium_dual_browser_mac.mm",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": true,
+    "prior_sha256": "c7338020dee87a7491ce6fd7878b0299ca3578bf3ae3e820cdf3e58a69a545c5",
+    "published_sha256": "4eec4f1ec800400f69cfba344051ea7df1d74c849da927e2f2715a59970f5fce"
+  },
+  {
+    "path": "chrome/browser/ui/helium/helium_dual_state.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": true,
+    "prior_sha256": "961c3be071a78d54943456f91a7b7473dd22cd61abf5575d3cfe3960a408f4bc",
+    "published_sha256": "4e37b03654791cb0d2a310ed712642544374a1c7cffa054cfb25a06fb54139d8"
+  },
+  {
+    "path": "chrome/browser/ui/helium/helium_dual_state_smoke.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": true,
+    "prior_sha256": "82282d0d3cf489c8a883af77c2578230ba9480f51b8242bebf46b633620ae400",
+    "published_sha256": "620080b2a14e2db467e1af0b7e41859b73946cc6a56de78658be85f115b8d971"
+  },
+  {
+    "path": "chrome/browser/ui/helium/helium_dual_window_host_mac.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": true,
+    "prior_sha256": "91f3543d7130008098d244b6c68c07a2d5fca84d832c5d86eb64e6945b34e7e9",
+    "published_sha256": "5a17745357f3a6db3e969e707d96ad610dba4470cedc0ebc032e9b6dac0ada37"
+  },
+  {
+    "path": "chrome/browser/ui/helium/helium_dual_window_host_mac.mm",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": true,
+    "prior_sha256": "70f10490d874305bd642a6f648bc55e5118655b89104ca24961df56fddbe7f0d",
+    "published_sha256": "da128c4d7deb1e8346dd3063fb7a20b9fb7f187d4c0faddaf09ecb0a1003e410"
+  },
+  {
+    "path": "chrome/browser/ui/helium/helium_layout_state_controller.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "59b9cbf50cf547490b84a4e5be26fbd239b0e4f8693ca5ed2ae3ff3b6a13cd6e",
+    "published_sha256": "1eba8dd5985994179a25c9bb5c5186c2cd5fa5ee7aad32143a9b5f3dde765023"
+  },
+  {
+    "path": "chrome/browser/ui/helium/helium_layout_state_controller.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "c611c0e6b839f643016155e7636398b81d4edf3139c6851fab57953a96a5a237",
+    "published_sha256": "12736306199fc427cd8c07613c0dac64e28fd214e27495fb298258dae7ad33cd"
+  },
+  {
+    "path": "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "03c2d6b281aac7e90713be2dc1be927334ff3e04cc889963faf9cd4ce4c05ed4",
+    "published_sha256": "2dade8184c8fc9f18ed813dd9afdad3dfea8cba4fa13c7bc81cf9ec1895ea4df"
+  },
+  {
+    "path": "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "c2c89de88f5488ec3968a2d0be734fe251b0165dc887355afa152bae3541ec57",
+    "published_sha256": "63de80bb383191b5b10740d34fd713781295e6847fb2aeb2cc8a64f1f993f583"
+  },
+  {
+    "path": "chrome/browser/ui/unload_controller.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "8eb170c0291f11fc42efe0d9d2b2bf3a1604a9d5f0d170f634b60dc85470e454",
+    "published_sha256": "3d4451549f2d2de9ae11c5f954bca6ecfee1ca834cb83ab9824e1779018022c3"
+  },
+  {
+    "path": "chrome/browser/ui/unload_controller.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "0947c5d52c0045a14a8cb18265562b6dcdd51ec5a2d22d4553f234afa0fe908c",
+    "published_sha256": "eda6f903c4b9aef4a2f3afe01ba38eefc847e26e449a8eb7b62c824c1da71479"
+  },
+  {
+    "path": "chrome/browser/ui/views/frame/browser_frame_view_mac.mm",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "9a9ceefd077507293de094c78e18eaf234157539596191d8ec14e6079e552e28",
+    "published_sha256": "ec89f13a199993700cd99eafac135c0812a3a97fdd7b1209a60b6d3ad494162f"
+  },
+  {
+    "path": "chrome/browser/ui/views/frame/browser_native_widget_mac.mm",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "8b259ea000ec967e783ecac2999af2f88a15a1a1de7fb418e30631ef3a9e876c",
+    "published_sha256": "0705520d9bd5eab9c979ac5d950da8a4e72cd56c38ca2258d7df100058770e21"
+  },
+  {
+    "path": "chrome/browser/ui/views/frame/browser_view.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "c19f1ec52afd170e83525ea000ff02531430046b928cad8c90d84972346fd933",
+    "published_sha256": "c5a2fa8116a736f07d0086036853891e6944960286bd26ae468cd6d2d1c46440"
+  },
+  {
+    "path": "chrome/browser/ui/window_feature_controller/window_feature_controller.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "de5b5d7ce861cab2aaeaff60f9860399e12e377d0f6492d2c7bb10f9cf46c154",
+    "published_sha256": "ce409876c28b2d2a3109cd4c5881d11a6c870049f4741e716408a5f024d99147"
+  },
+  {
+    "path": "chrome/browser/ui/window_feature_controller/window_feature_controller.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "691be4ca084dc31cfd71bdcdbdb8a10c40bc2074626ee9c313775757f48fde18",
+    "published_sha256": "b1f26f11bdc4a0176e5e476168a2a08a23762ecb933f5b47b1626e529bc20093"
+  },
+  {
+    "path": "chrome/common/chrome_paths_mac.mm",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "3aff2634a4f2cc0aec0446a17f5e64408b7ec5a1e784836eee4aa838ac6a3ceb",
+    "published_sha256": "cef9b7359468936878c6e0742efbe2f837f74ee9f702f8551240e921648adf5a"
+  },
+  {
+    "path": "chrome/browser/sessions/BUILD.gn",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "c89e4583390d1bc82a99aa61b757d249faaa8f7a3fc65edec490aa52c17ad10e",
+    "published_sha256": "2b7319824ebcb21e6fcf7548eab2ac8edae9ade62644cfb4353e5b537c74e218"
+  },
+  {
+    "path": "third_party/devtools-frontend/src/scripts/build/build_inspector_overlay.py",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "c56a0307c269fd4de76196bc3b308d77754b95ed3043ebd6de81667181ec8539",
+    "published_sha256": "791fd63df34ec182d529f350a222637c1fcb557c9ceec4d00cb3077e4b55914a"
+  },
+  {
+    "path": "components/helium_onboarding/BUILD.gn",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "c5db174a9f87a9b817efe0812eb2fca37f77c0c0fbfc8f708e042b07bf0eb60d",
+    "published_sha256": "0370a654ef65cb22eb087ad03a9be82e6a45788506f03879c94aa77ada75c8d4"
+  },
+  {
+    "path": "third_party/ublock/BUILD.gn",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "3a99bbf6a6f33102cf3692e4ae36cc285580bc368150b6312acaa1bc7cbd5f52",
+    "published_sha256": "86e0a95ebac9f5bd5b7257b831bab66642de2d57d9bd2d3f252500b757731fff"
+  },
+  {
+    "path": "chrome/test/data/webui/cr_elements/cr_profile_avatar_selector_test.ts",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "11814a1b6c7bed883993a14dc33bb3932d3c22a7c940dd4289842d1354cb4f1e",
+    "published_sha256": "144892773824f2b30beff2b7999e4a8875b137a5c0134e03c03bd1012be07ff9"
+  },
+  {
+    "path": "chrome/test/data/webui/settings/people_page_manage_profile_test.ts",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "9ee25305e63aa80f2e70412e09893e2eee31a055b1f1753a6336affd06f2035a",
+    "published_sha256": "d68cc7b663cea030be3c926e4bdb285a9912fb10715a8a562ae9061eeeda66c9"
+  },
+  {
+    "path": "chrome/test/data/webui/signin/test_manage_profiles_browser_proxy.ts",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "7db2c0907ce45746e22a404ee4454c44950d265a3c56ee14fee6f19c45d612f8",
+    "published_sha256": "767371df29a0913a074fb5106859e8765969c4b235142373a47eb7a12be54c26"
+  },
+  {
+    "path": "chrome/test/data/webui/signin/test_profile_customization_browser_proxy.ts",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "9ca02424de3a147e4b62c190bbfd9c14b8fe807eaba00a34d0c6dde6122a5eee",
+    "published_sha256": "6b8516bc088c2e4e59afffbbd9905a70a590625efe57da2903322e68dc068fc2"
+  },
+  {
+    "path": "chrome/test/base/testing_browser_process.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "dcb1c10f7c8e361da391d4363659fc9bbe25afbedf5f02c740def2a0befaae26",
+    "published_sha256": "01bd312c000f924df6e1f175ac68da79b73c606c5ab918ca8350ddfc03070e37"
+  },
+  {
+    "path": "chrome/test/base/testing_browser_process.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "a011f998e4aaf14f1f3595c1ab4dda2e8e478322b62b9c35fc43a8bac5beee73",
+    "published_sha256": "3ef29e174f90579da4e4046f2c532802cf63fba457846f3bd13b4231e46ae2cc"
+  },
+  {
+    "path": "chrome/test/data/webui/extensions/sidebar_test.ts",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "1a763f8a135cc0fdd3b0b1af9068a19cc4b1e0eb98c0a7d1e155329a8b045f2e",
+    "published_sha256": "e8cf83541f9eef1c7085be8994218d36cf0d84fa5de5076d95dbe8df4ef37091"
+  },
+  {
+    "path": "chrome/browser/ui/views/frame/browser_view.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "909495fabd777ccd10c04d310339635956f5ebc4ecb138b927778cb096ac8563",
+    "published_sha256": "a057baf41982a7066f87a03b749c42d215f934ae69a96dc92eda317cca374790"
+  },
+  {
+    "path": "chrome/test/BUILD.gn",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "3ec5b310c872cda87da2b99c78370bd408ba37f9bcc13a87d1cad6991bf1f344",
+    "published_sha256": "c7f93c3099d273b916d82401e4b31e1d2da646d0c989b35116b4778af0daebcc"
+  },
+  {
+    "path": "third_party/blink/renderer/core/testing/dummy_page_holder.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "a85bb5c560843a98db4008b2f30567954b2f02d83533623fa7a6988a30fdcfe9",
+    "published_sha256": "940fa57436c730a3b6cf8f96f9e6664dcc687e591a729b7ca358b5ff759e6015"
+  },
+  {
+    "path": "content/test/test_page_broadcast.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "94ab31f9e266b888d31804d34ee8336865b43044049b049dbd65c634e0119070",
+    "published_sha256": "2b08d499ebccabd7aa88b255fad6f7e9f87481109ab4411c8587c3c39c5a7039"
+  },
+  {
+    "path": "content/test/test_page_broadcast.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "f9b618a3b3ff6d2b3665ed293af7b59c938ef98f7061a2872f5d0272e9ee7914",
+    "published_sha256": "64816e4ceeeef11e0c9d8d6c2da707616130df6f0809392a1e27881821f8de63"
+  },
+  {
+    "path": "components/os_crypt/common/keychain_password_mac.mm",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "5c82fbdea90abdbb29e942bb1a5b95afef552c32fd5b87971f75543bb097c7b5",
+    "published_sha256": "a1011465895321f3df862d8cf304a8e60a7fc36675d7f1e5a472c04a60d0a904"
+  },
+  {
+    "path": "chrome/browser/search_engines/template_url_service_test_util.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "07eb27f8e534b81206854d9673ac3bd7b33c5f2f8ada3988658ffc1c513ca1b6",
+    "published_sha256": "91bfbbc28e2bf93a0b96efbaeca1429b46cc95c168b970f004a34218f551bb96"
+  },
+  {
+    "path": "components/omnibox/browser/test_location_bar_model.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "41cb6272a72b1ccc3e10b4cec028a015db64fb6c93e15cf3885cd6cbc869575b",
+    "published_sha256": "3eb330bd681bae9878b79f50cd6b5b63dcd4ea8e4b42d1f9a5a634cdc7972c8b"
+  },
+  {
+    "path": "components/omnibox/browser/test_location_bar_model.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "64cdeb3f2b07b4d2b71595aadf857b07e076d4471c23c70f67b8a1de3472da9e",
+    "published_sha256": "d7e6e6dcdb0ed98e7b5cf4d86645f6691d0316283cdd7d9222449cd3ae7180fd"
+  },
+  {
+    "path": "components/search_engines/BUILD.gn",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "c5ce7a7676ec9cf72405d943cbe4fa9d37b6958e08324d662d71ab9b146606e0",
+    "published_sha256": "3c468e939c7dbe18108d73329d2c980694e430a65a95c764743febe228d4b972"
+  },
+  {
+    "path": "components/search_engines/search_engines_test_environment.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "57e9c97bf628e6e803b1313591b7ac13b075cd06e9eb8cf553009a0e2eec7146",
+    "published_sha256": "d85e6ee441762eef70569c995f204e3d2269c1cc9ec7e4e8728d7e4650aa6490"
+  },
+  {
+    "path": "components/search_engines/template_url_service_test_util.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "f782d24d445056468eedb8810feec1f3e48ba494b1a7e1d0d1bde4f65b7df3c9",
+    "published_sha256": "5d91f953a772b890c379a084ff73e076757249d4a46591270145f2d22859189d"
+  },
+  {
+    "path": "extensions/browser/test_blocklist_state_fetcher.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "7d28c97b306a27c82cc7dda6a8ebeea6c468aeaeb4a9d873f6cd0639ebe06511",
+    "published_sha256": "1eefa5c088c457e946d751106ac855c26f91c7a53c7065e1d825af88588b57dd"
+  },
+  {
+    "path": "chrome/browser/app_controller_mac.mm",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "30fbef3501608a88c8ffac5bacf1452c4f56964d2d6b3da8c4ae4137dead32d0",
+    "published_sha256": "453d5f563cc8e0c9b50ea1c347ba500701d780c53417996c8889de0e71bdfbc5"
+  },
+  {
+    "path": "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "8e4198ec6d63d7c30279f3f0395fae3ba76cef442dfd90610d43e47becb6ce2f",
+    "published_sha256": "845bb9477214d1fc7dfe712ba259b8ad3a46c5a22ab07fc028027f110a5afa52"
+  },
+  {
+    "path": "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "c4abb6b265e83d0c6a5622f49980bbc117ad63d1c44c42d90d2c86f9027eb818",
+    "published_sha256": "ea15dab019ef8b55d8d8ee90b74936fa49e943f20fc2448c2be26078d649eee1"
+  },
+  {
+    "path": "chrome/app/settings_strings.grdp",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "464bd8ff478e483547a93a87ea8dba5875df0245be18b1930db4cfbc63db0996",
+    "published_sha256": "3cfca89d4c2a42e0e1d51346b18fe88167bfded45dd78a0f56e59814a5b76568"
+  },
+  {
+    "path": "chrome/browser/resources/settings/appearance_page/appearance_browser_proxy.ts",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "91a1689d45c8cc88782baeea5f8e40eae78591d167a4ef6589a5cdd3ba19703e",
+    "published_sha256": "2209626a0a976a577b288c36118e5a4b097a90a9b40bc03554ee49a3d786e96a"
+  },
+  {
+    "path": "chrome/browser/resources/settings/appearance_page/appearance_page.html.ts",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "2028ee6a287e1ee97c88712cc10fcc0965c5c679525a5173d1df9fe08ddc606d",
+    "published_sha256": "d97e4648cd601bc90e81fa0d0d504d4705a43f6bc383558601dc7f35a4849df6"
+  },
+  {
+    "path": "chrome/browser/resources/settings/appearance_page/appearance_page.ts",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "646ea87037a47f91dbe9b40d7cbd5d04fef3f42aa3ea867cc48ade831d39c8f9",
+    "published_sha256": "0bbd38299ab8c8d6bad90da374d27844b18724ffdbf95d4f3d9f5a1aa435654c"
+  },
+  {
+    "path": "chrome/browser/sessions/helium_dual_webdata_unittest.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": true,
+    "prior_sha256": "02d75a266f1b58aa4202c85f070e3ab6e091fbd07d21d8b255211561df3efc97",
+    "published_sha256": "439c06921e3ce274d475a511167e7fa56a431e80d4d374eccb50d2f638e1ee0a"
+  },
+  {
+    "path": "chrome/browser/ui/views/frame/multi_contents_view.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "529f6598e2ddad9a4ae810fd8193f6d044dce13b36be84186ab8678b68064d77",
+    "published_sha256": "5bd082aeb931605304d5cbd2463b5aad9b9196a60b8d227a5e9cf5444851d8ef"
+  },
+  {
+    "path": "chrome/browser/ui/webui/settings/appearance_handler.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "20d617e4dd95921e07311f661e312ca5d1cd6f60f8a1cbd42ea473d9c06a4e1c",
+    "published_sha256": "8e65df9fd65673ec2a3625f2b9a06cacfc6e14364c3c8b628dc157dfd5caa104"
+  },
+  {
+    "path": "chrome/browser/ui/webui/settings/appearance_handler.h",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "e86b05b81caf105f0a617964296785f3959d68692ca7240038d0db1f1931ae91",
+    "published_sha256": "75c15c1ca6e943f80d3b9adafecbe32025417160199ab1969772c2617cbd0a60"
+  },
+  {
+    "path": "chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "24fb952003ee5f90b91e7938ff71f13044eed7056cd48df6ab6444bdca26c10c",
+    "published_sha256": "f0df93936f50a4a61b2746da74eca747c4b071d31f4cfcd6dfd41d9aabf4889d"
+  },
+  {
+    "path": "chrome/test/data/webui/settings/test_appearance_browser_proxy.ts",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "35b89fc47d4e7b21af7b72bd53c62c6d7e50c0a506228d5bc813e2b37116f500",
+    "published_sha256": "b8a4b2417047101c437ade4569bc2c82d8f2c2c831111b22f9d97eda686f72b4"
+  },
+  {
+    "path": "components/autofill/core/browser/webdata/payments/autofill_wallet_usage_data_sync_bridge.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "699dd6e4829712a72912f68b5ed9653de11053574ab69532e38b5e4d1dd005c2",
+    "published_sha256": "bd49fca515d7d8669b2f0630d3a4f22d8db4e0a814df8532340c4e83478af5e2"
+  },
+  {
+    "path": "components/webdata/common/web_database_service.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "8c63b999a52579e0713eab8fcdb39eafef67279ecf99d60d82744e773ee53d72",
+    "published_sha256": "4176497e79fdef31a2ea961a8128190ee98b54261ef4bcdde5a06973d6651eb1"
+  },
+  {
+    "path": "chrome/browser/sessions/helium_dual_app_menu_unittest.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": true,
+    "prior_sha256": "7c0eaf9209d71f51802f06dec2053737ec814baa1e08432410afac69473ba815",
+    "published_sha256": "1f0670ae6e15e775630829498b69c17587fe158b1d8d9c67ae7ee3d29289f718"
+  },
+  {
+    "path": "chrome/browser/ui/views/toolbar/webui_app_menu_control.cc",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": false,
+    "prior_sha256": "5af372a397806efa59ff92b2769a59ddb98b1360c0bbdd6e0fb4c08acc48688c",
+    "published_sha256": "c34f7b4dd9747caf293c6626571a96ea4da155dfb98ce789afd61a0659e07f58"
+  },
+  {
+    "path": "chrome/browser/sessions/helium_dual_browser_host_unittest.mm",
+    "functional_modified": "2026-09-08",
+    "publication_modified": "2026-09-09",
+    "new_file": true,
+    "prior_sha256": "d1c270ebbb9a19c9e18ed0abe91790f300e68e6499942cdfb2582f7b39fed3c8",
+    "published_sha256": "52f86a92955da2f8800f29c3ac854170246d5d3394d51c0f49ef3105dc3716b9"
+  }
+]
