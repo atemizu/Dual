@@ -1,5 +1,6 @@
 <p align="center"><img src="assets/logo.jpg" alt="Dual unofficial project logo" width="200"></p>
-<img width="1718" height="1340" alt="image" src="https://github.com/user-attachments/assets/e6104c0f-894a-4a37-8467-9c894f1bc494" />
+<img width="2048" height="1597" alt="9a0d9fa4-64a4-49e1-a8d7-3c5a716ef3da" src="https://github.com/user-attachments/assets/d1a2b1b9-ded8-40ed-8b53-3f15ac118ce9" />
+
 
 
 # Dual — 非公式派生版 / Unofficial derivative
