@@ -29,7 +29,7 @@ Dual is an unofficial modified version of Helium. The modifications are released
 
 Helium固有のコード・改変部分には上流のGPL-3.0が適用されます。Chromium、ungoogled-chromium、その他の取り込み部分はそれぞれの元のライセンスと通知を保持します。ルートのGPL表示で、取り込み部分の著作権者・ライセンスを書き換えるものではありません。[licenses/](licenses/)と各ファイルの表示を参照してください。
 
-## ロゴ・名称
+## ロゴ
 
 READMEのロゴは自作した独自画像です。
 
