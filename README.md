@@ -1,5 +1,5 @@
 <p align="center"><img src="assets/logo.jpg" alt="Dual unofficial project logo" width="200"></p>
-<img width="2048" height="1597" alt="9a0d9fa4-64a4-49e1-a8d7-3c5a716ef3da" src="https://github.com/user-attachments/assets/d1a2b1b9-ded8-40ed-8b53-3f15ac118ce9" />
+
 
 
 
@@ -8,6 +8,8 @@
 **Heliumを改変した非公式派生版です。この改変部分はGPL-3.0で公開しています。imput LLC / Helium projectとは無関係の非公式プロジェクトであり、公式の製品・配布物・サポート窓口ではありません。**
 
 macOS Apple Silicon向けに、左右それぞれ独立したBrowser・タブ一覧・アドレスバーを同じ外枠に収める変更です。左右はプロファイルを共有します。
+
+<img width="2048" height="1597" alt="9a0d9fa4-64a4-49e1-a8d7-3c5a716ef3da" src="https://github.com/user-attachments/assets/d1a2b1b9-ded8-40ed-8b53-3f15ac118ce9" />
 
 以前の開発名はHelium Dualです。既存のビルド手順・内部識別子・保存先には互換性のため旧名称が残ります。今回の公開プロジェクト名はDualです。
 
