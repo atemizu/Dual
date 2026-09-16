@@ -7,7 +7,7 @@
 
 **Heliumを改変した非公式派生版です。この改変部分はGPL-3.0で公開しています。imput LLC / Helium projectとは無関係の非公式プロジェクトであり、公式の製品・配布物・サポート窓口ではありません。**
 
-macOS Apple Silicon向けに、左右それぞれ独立したBrowser・タブ一覧・アドレスバーを同じ外枠に収める変更です。左右はプロファイルを共有します。
+一般的なSplit Viewのように2つのタブを並べるのではなく、左右それぞれが独立したタブ一覧・アドレスバー・ナビゲーションを持つブラウザとして動作します。プロファイルのみ共有します。
 
 <img width="2048" height="1597" alt="9a0d9fa4-64a4-49e1-a8d7-3c5a716ef3da" src="https://github.com/user-attachments/assets/d1a2b1b9-ded8-40ed-8b53-3f15ac118ce9" />
 
