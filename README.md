@@ -13,8 +13,6 @@
 
 以前の開発名はHelium Dualです。既存のビルド手順・内部識別子・保存先には互換性のため旧名称が残ります。今回の公開プロジェクト名はDualです。
 
-Dual is an unofficial modified version of Helium. The modifications are released under GNU GPL version 3 (GPL-3.0-only). This independent project is not affiliated with, sponsored by, or endorsed by imput LLC or the Helium project.
-
 - 機能改変日：**2026年9月8日**
 - 公開用のライセンス・改変表示・ドキュメント整備日：**2026年9月9日**
 - 対応元：Helium 0.16.5.1 / Chromium 152.0.7977.82
