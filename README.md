@@ -7,7 +7,7 @@
 
 ## ダウンロード / Download
 
-[Dual-5-macOS-arm64.dmgをダウンロード](https://github.com/atemizu/Dual/releases/download/v5.0.0/Dual-5-macOS-arm64.dmg) · [すべてのリリース](https://github.com/atemizu/Dual/releases)
+[Dual-5-macOS-arm64.dmgをダウンロード](https://github.com/atemizu/Dual/releases/download/v5.0.0/Dual-5-macOS-arm64.dmg) 
 
 DMGを開き、Dual 5.appをApplicationsへコピーして起動してください。Apple Silicon搭載Mac向けです。配布物はアドホック署名で、Apple Developer ID署名・公証は完了していません。
 
