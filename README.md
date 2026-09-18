@@ -1,10 +1,6 @@
-<p align="center"><img src="assets/logo.jpg" alt="Dual unofficial project logo" width="200"></p>
+<img width="2048" height="1597" alt="9a0d9fa4-64a4-49e1-a8d7-3c5a716ef3da" src="https://github.com/user-attachments/assets/a2d0ef63-2179-4c06-90b6-490c9ea6e2e2" />
 
-# Dual 5 — 左右独立ブラウザ / Independent dual-pane browser
-
-Dual 5は、HeliumをベースにしたmacOS Apple Silicon向けの非公式派生ブラウザです。一般的なSplit Viewのように1つのタブバーを分けるのではなく、左右それぞれが独立したブラウザペインとして動作します。
-
-Dual 5 is an unofficial Helium derivative for Apple Silicon macOS. Each side is an independent browser pane rather than a single tab strip split into two.
+# Dual 5 — Helium Browser非公式派生
 
 一つのウィンドウ内に二つの独立したタブバーとブラウザ領域を持つことです。一般的なSplit Viewが二つのタブを並べるのに対し、本プロジェクトでは左右それぞれで複数のタブを独立して管理できます。  
 同じことは二つのウィンドウを並べても実現できますが、本プロジェクトではその操作を一つのウィンドウ内に統合します。境界をドラッグすると左右の領域が連動してリサイズされるため、ウィンドウの配置やサイズを個別に調整する必要がありません。
