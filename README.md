@@ -26,6 +26,6 @@ The former development name was Helium Dual. Some legacy names remain in storage
 
 The canonical change set is [helium-dual-window.patch](helium-dual-window.patch). The pinned upstream commit and hashes are recorded in [source-lock.json](source-lock.json).
 
-The original code and modifications are released under the GNU General Public License version 3 (GPL-3.0-only). License text and third-party notices are included in [LICENSE](LICENSE) and [licenses/](licenses/).
+The original code and modifications are released under the GNU General Public License version 3 (GPL-3.0-only). License text and third-party notices are included in [LICENSE](LICENSE), [licenses/](licenses/), and [NOTICE.md](NOTICE.md). The distributed app retains the upstream credits and license view at helium://credits/.
 
 Dual 5 is an unofficial modified version of Helium. It is not affiliated with, sponsored by, or endorsed by imput LLC or the Helium project. The modifications are released under GPL-3.0-only.
