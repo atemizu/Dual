@@ -1,12 +1,10 @@
-<img width="2048" height="1597" alt="Dual split browser view" src="https://github.com/user-attachments/assets/a2d0ef63-2179-4c06-90b6-490c9ea6e2e2" />
+![Dragging the divider resizes both panes; each side keeps its own tabs](assets/dual-demo.gif)
 
 # Dual — Unofficial Helium derivative
 
 Dual places two independent tab bars and browser panes in one window. Unlike a conventional Split View that places two tabs side by side, each side of Dual manages multiple tabs independently.
 
 The same layout can be created by positioning two separate windows, but Dual integrates that workflow into one window. Dragging the divider resizes both panes together, so each window does not need to be positioned or resized separately.
-
-![Dragging the divider resizes both panes; each side keeps its own tabs](assets/dual-demo.gif)
 
 ## Download
 
