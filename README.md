@@ -6,11 +6,26 @@ Dual places two independent tab bars and browser panes in one window. Unlike a c
 
 The same layout can be created by positioning two separate windows, but Dual integrates that workflow into one window. Dragging the divider resizes both panes together, so each window does not need to be positioned or resized separately.
 
+![Dragging the divider resizes both panes; each side keeps its own tabs](assets/dual-demo.gif)
+
 ## Download
 
 [Download Dual-6.2.2-macOS-arm64.dmg](https://github.com/atemizu/Dual/releases/download/v6.2.2/Dual-6.2.2-macOS-arm64.dmg)
 
 Open the DMG and copy Dual 6.2.2.app to Applications. This build is for Apple Silicon Macs. The distributed app is ad-hoc signed and is not signed or notarized with an Apple Developer ID.
+
+### If macOS won't open the app
+
+Because the app is not notarized, macOS blocks it the first time ("cannot be opened", "Apple could not verify…", or "is damaged").
+
+1. Try to open Dual 6.2.2 once, then close the warning.
+2. Open **System Settings → Privacy & Security**, scroll down, and click **Open Anyway** next to the message about Dual 6.2.2. Confirm with your password.
+
+If the app is reported as damaged, or Open Anyway does not appear, remove the download quarantine flag in Terminal:
+
+```sh
+xattr -dr com.apple.quarantine "/Applications/Dual 6.2.2.app"
+```
 
 Dual 6.2.2 uses the same bundle identifier as Dual 5, so an existing Dual 5 profile carries over. Quit Dual 5 before opening Dual 6.2.2.
 
