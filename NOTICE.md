@@ -1,6 +1,6 @@
 # Copyright, licenses and attribution
 
-Copyright 2026 Helium Dual contributors — original contributions and modifications, GPL-3.0-only. Functional changes: 2026-09-08. Publication annotations and tooling: 2026-09-09.
+Copyright 2026 Helium Dual contributors (also written as "Dual contributors") — original contributions and modifications, GPL-3.0-only. Functional changes: 2026-09-08 to 2026-09-25 (Dual 6.2.2, based on Helium 0.17.2.2). Publication annotations and tooling: 2026-09-09 and 2026-09-29.
 
 This is an independent, unofficial derivative. It is not affiliated with imput LLC or the Helium project.
 
@@ -12,8 +12,6 @@ This is an independent, unofficial derivative. It is not affiliated with imput L
 - Chromium: original notice in `licenses/Chromium-LICENSE.txt`; individual files and dependencies retain their own notices/licenses.
 
 Upstream source and dependencies fetched during a build retain their copyright, license and credit files. This list identifies the material bundled here; it is not a replacement for all licenses in the full upstream source tree.
-
-The original test-input archive contains unmodified Chromium inputs. Its per-file provenance and hashes are in `fixtures/original-test-inputs.manifest.json`; original in-file notices are preserved. The archive is build/test source input, not a compiled application.
 
 Existing upstream copyright and license lines are not removed by the publication patch. GPL notices identify the independent modifications, without changing the license of unmodified imported portions. Four newly authored Helium Dual files previously had a generic BSD-style header; those local headers now identify GPL-3.0-only. That correction does not remove any imported upstream notice.
 
