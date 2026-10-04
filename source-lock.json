@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "release": "Dual 6.2.2",
+  "release": "Dual 6.2.3",
   "helium_macos": {
     "url": "https://github.com/imputnet/helium-macos.git",
     "tag": "0.17.2.2",
@@ -19,8 +19,8 @@
   },
   "local_patch": {
     "path": "helium-dual-window.patch",
-    "sha256": "dd9692b78905748e032e9b1f5bfad34c470924a83730174ba9e0f778b8b41ec5",
-    "files": 87,
+    "sha256": "cb19cf142cea38d634d1b2be4bc82cc4a96c14b688890b089d83fbad7efcc3c0",
+    "files": 92,
     "applies_to": "Helium 0.17.2.2 source after Helium's own prepare steps (patches, domain and name substitution, translations)"
   },
   "build": {
@@ -29,5 +29,11 @@
     "xcode": "26.6 (17F113)",
     "target": "macOS arm64"
   },
-  "packaging": "packaging/package_release.py (ad-hoc signed; not Developer ID signed or notarized)"
+  "packaging": "packaging/package_release.py (ad-hoc signed; not Developer ID signed or notarized)",
+  "rebrand": {
+    "script": "dual_rebrand.py",
+    "sha256": "5df61314f1a6ef948cd66b58bdb24554ec00c541c5d6dcb53561fce552cde61a",
+    "branding": "branding/",
+    "applies_after": "helium-dual-window.patch"
+  }
 }

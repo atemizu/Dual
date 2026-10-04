@@ -1,0 +1,29 @@
+// Copyright 2026 Dual contributors. Dual is an unofficial derivative of Helium.
+// You can use, redistribute, and/or modify this source code under
+// the terms of the GPL-3.0 license that can be found in the LICENSE file.
+
+CANVAS_DIMENSIONS, 256,
+NEW_PATH,
+PATH_COLOR_ARGB, 0xFF, 0xDD, 0xDD, 0xDD,
+ROUND_RECT, 0, 0, 256, 256, 58,
+NEW_PATH,
+PATH_COLOR_ARGB, 0xFF, 0x36, 0x29, 0x79,
+MOVE_TO, 36, 158.67f,
+LINE_TO, 220, 158.67f,
+LINE_TO, 220, 220,
+LINE_TO, 36, 220,
+CLOSE,
+NEW_PATH,
+PATH_COLOR_ARGB, 0xFF, 0x22, 0x7A, 0xF4,
+MOVE_TO, 97.33f, 97.33f,
+LINE_TO, 220, 97.33f,
+LINE_TO, 220, 158.67f,
+LINE_TO, 97.33f, 158.67f,
+CLOSE,
+NEW_PATH,
+PATH_COLOR_ARGB, 0xFF, 0x84, 0xD6, 0xFE,
+MOVE_TO, 158.67f, 36,
+LINE_TO, 220, 36,
+LINE_TO, 220, 97.33f,
+LINE_TO, 158.67f, 97.33f,
+CLOSE

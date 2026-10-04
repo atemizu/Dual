@@ -1,0 +1,15 @@
+// Copyright 2026 Dual contributors. Dual is an unofficial derivative of Helium.
+// You can use, redistribute, and/or modify this source code under
+// the terms of the GPL-3.0 license that can be found in the LICENSE file.
+
+CANVAS_DIMENSIONS, 56,
+FILL_RULE_NONZERO,
+MOVE_TO, 4, 52,
+LINE_TO, 4, 36,
+LINE_TO, 20, 36,
+LINE_TO, 20, 20,
+LINE_TO, 36, 20,
+LINE_TO, 36, 4,
+LINE_TO, 52, 4,
+LINE_TO, 52, 52,
+CLOSE

@@ -1,16 +1,19 @@
 {
   "status": "PASS",
-  "date": "2026-09-29",
-  "release": "Dual 6.2.2",
+  "date": "2026-10-04",
+  "release": "Dual 6.2.3",
   "source_only": false,
-  "binary": "Dual-6.2.2-macOS-arm64.dmg (ad-hoc signed)",
-  "patch_files": 87,
+  "binary": "Dual-6.2.3-macOS-arm64.dmg (ad-hoc signed), sha256 849f009f92809ab9c977d1f4cc833142ef950666a65afb314f30b499f5f70fc4",
+  "patch_files": 92,
   "patch_applies_to_prepared_helium_0.17.2.2": true,
-  "modification_notices": "57 files annotated in the patch; BRANDING and settings_strings.grdp listed in MODIFICATIONS.md",
+  "reproduces_build_sources": "pristine Helium 0.17.2.2 + helium-dual-window.patch + dual_rebrand.py + branding/ reproduce all 2304 touched files of the build tree; 57 differ only in publication notice comment lines",
+  "modification_notices": "files changed in 6.2.3 carry dated notices; BRANDING and settings_strings.grdp listed in MODIFICATIONS.md",
+  "in_app_helium_logos": "none (product logos, onboarding logo, partner badge and services header replaced or removed)",
   "upstream_license_copies_byte_identical": true,
   "terms_rechecked": [
-    "https://helium.computer/terms",
-    "https://helium.computer/privacy",
+    "https://helium.computer/terms (2026-07-08)",
+    "https://helium.computer/privacy (2026-07-16)",
     "https://helium.computer/brand"
-  ]
+  ],
+  "crash_reporting": "Helium's crash reporting sends to Helium's service when a user opts in; README asks Dual users to keep it off; to be disabled in Dual in the next update"
 }

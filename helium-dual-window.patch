@@ -1437,14 +1437,15 @@
  
 --- a/chrome/browser/ui/views/frame/browser_frame_view_mac.mm
 +++ b/chrome/browser/ui/views/frame/browser_frame_view_mac.mm
-@@ -1,3 +1,6 @@
+@@ -1,3 +1,7 @@
 +// Modified by Dual contributors on 2026-09-12: keep hosted pane drags inside Dual.
++// Modified by Dual contributors on 2026-10-03: Zen mode fades the pane's window controls.
 +// These modifications are licensed under GPL-3.0; original notices are retained.
 +
  // Copyright 2015 The Chromium Authors
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
-@@ -28,6 +31,8 @@
+@@ -28,6 +32,8 @@
  #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
  #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
  #include "chrome/browser/ui/fullscreen_util_mac.h"
@@ -1453,7 +1454,7 @@
  #include "chrome/browser/ui/helium/helium_layout_state_controller.h"
  #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
  #include "chrome/browser/ui/layout_constants.h"
-@@ -103,7 +108,8 @@
+@@ -103,7 +109,8 @@
          base::BindRepeating(&BrowserFrameViewMac::UpdateFullscreenTopUI,
                              base::Unretained(this)));
    }
@@ -1463,7 +1464,7 @@
             ->UsesImmersiveFullscreenMode()) {
      fullscreen_toolbar_controller_ =
          [[FullscreenToolbarController alloc] initWithBrowserView:browser_view];
-@@ -136,6 +142,12 @@
+@@ -136,6 +143,12 @@
  // BrowserFrameViewMac, BrowserFrameView implementation:
  
  void BrowserFrameViewMac::OnFullscreenStateChanged() {
@@ -1476,7 +1477,7 @@
    if (GetBrowserView()->IsFullscreen()) {
      PictureInPictureWindowManager::GetInstance()
          ->OnAnyBrowserEnteredFullscreen();
-@@ -181,6 +193,10 @@
+@@ -181,6 +194,10 @@
  }
  
  void BrowserFrameViewMac::OnTabStripStateChanged() {
@@ -1487,7 +1488,7 @@
    NSWindow* const window = GetWidget()->GetNativeWindow().GetNativeNSWindow();
    if (!window) {
      return;
-@@ -241,6 +257,11 @@
+@@ -241,6 +258,11 @@
  }
  
  void BrowserFrameViewMac::UpdateFullscreenTopUI() {
@@ -1499,7 +1500,7 @@
    BrowserWindowInterface* browser = GetBrowserView()->browser();
    // Update to the new toolbar style if needed.
    FullscreenToolbarStyle new_style;
-@@ -325,6 +346,9 @@
+@@ -325,6 +347,9 @@
  }
  
  bool BrowserFrameViewMac::ShouldHideTopUIInFullscreen() const {
@@ -1509,7 +1510,7 @@
    return [fullscreen_toolbar_controller_ toolbarStyle] !=
           FullscreenToolbarStyle::TOOLBAR_PRESENT;
  }
-@@ -358,6 +382,9 @@
+@@ -358,6 +383,9 @@
  }
  
  gfx::RoundedCornersF BrowserFrameViewMac::GetWindowRoundedCorners() const {
@@ -1519,7 +1520,16 @@
    if (auto* const widget = GetWidget();
        widget && !widget->IsFullscreen() && !widget->IsMaximized()) {
      return gfx::RoundedCornersF(
-@@ -476,6 +503,20 @@
+@@ -367,6 +395,8 @@
+ }
+ 
+ void BrowserFrameViewMac::SetCaptionButtonsOpacity(float opacity) {
++  // A hosted pane has no titlebar buttons; the Dual host draws them in it.
++  helium_dual::SetPaneWindowControlsOpacity(GetBrowserView(), opacity);
+   helium_fullscreen_controls_.alphaValue = opacity;
+   NSWindow* window = GetWidget()->GetNativeWindow().GetNativeNSWindow();
+   if (!window) {
+@@ -476,6 +506,20 @@
  }
  
  int BrowserFrameViewMac::NonClientHitTest(const gfx::Point& point) {
@@ -1540,7 +1550,7 @@
    if (helium_fullscreen_controls_host_ &&
        helium_fullscreen_controls_host_->IsDrawn() &&
        helium_fullscreen_controls_host_->GetMirroredBounds().Contains(point)) {
-@@ -554,6 +595,12 @@
+@@ -554,6 +598,12 @@
  BrowserFrameViewMac::BoundsAndMargins
  BrowserFrameViewMac::GetCaptionButtonBounds() const {
    BoundsAndMargins result;
@@ -1553,7 +1563,7 @@
  
    // In popups, the titlebar is system-drawn and the caption buttons aren't part
    // of the client area.
-@@ -636,6 +683,9 @@
+@@ -636,6 +686,9 @@
  }
  
  int BrowserFrameViewMac::TopUIFullscreenYOffset() const {
@@ -1728,23 +1738,23 @@
 --- a/chrome/browser/ui/views/frame/browser_view.cc
 +++ b/chrome/browser/ui/views/frame/browser_view.cc
 @@ -1,3 +1,7 @@
-+// Modified by Dual contributors on 2026-09-12.
++// Modified by Dual contributors on 2026-09-12, 2026-10-03 and 2026-10-04.
 +// You can use, redistribute, and/or modify these changes under GPL-3.0.
 +// The original copyright and license notices are retained below.
 +
  // Copyright 2012 The Chromium Authors
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
-@@ -87,6 +91,9 @@
- #include "chrome/browser/ui/browser_commands.h"
+@@ -88,6 +92,9 @@
  #include "chrome/browser/ui/browser_element_identifiers.h"
  #include "chrome/browser/ui/browser_init_state.h"
-+#if BUILDFLAG(IS_MAC)
+ #if BUILDFLAG(IS_MAC)
 +#include "chrome/browser/ui/helium/helium_dual_browser_mac.h"
 +#endif
- #if BUILDFLAG(IS_MAC)
++#if BUILDFLAG(IS_MAC)
  #include "chrome/browser/ui/browser_shortcuts/browser_shortcut_platform_mac.h"
  #endif
+ #include "chrome/browser/ui/browser_shortcuts/browser_shortcut_service_factory.h"
 @@ -989,6 +996,10 @@
        browser_(browser),
        zen_top_chrome_animation_(this),
@@ -1756,7 +1766,84 @@
    if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_.get())) {
      manager->OnBrowserWindowCreated();
    }
-@@ -2260,8 +2271,15 @@
+@@ -1800,6 +1811,9 @@
+ }
+ 
+ void BrowserView::OnZenModeSideChromePinnedPrefChanged() {
++#if BUILDFLAG(IS_MAC)
++  helium_dual::OnZenModeChanged(this);
++#endif
+   if (!zen_mode_enabled_) {
+     return;
+   }
+@@ -1863,6 +1877,9 @@
+ }
+ 
+ void BrowserView::UpdateZenModeState() {
++#if BUILDFLAG(IS_MAC)
++  helium_dual::OnZenModeChanged(this);
++#endif
+   const bool zen_mode_enabled = IsZenModeEnabled();
+   UpdateZenModeEventMonitor();
+ 
+@@ -2107,12 +2124,36 @@
+   auto* controller = tabs::VerticalTabStripStateController::From(browser_);
+   const bool right_aligned = controller && controller->IsTabStripRightAligned();
+   if (right_aligned) {
++#if BUILDFLAG(IS_MAC)
++    // A Dual pane's strip faces the window edge along which the page's
++    // scroll bar runs. Keep the scroll bar usable: only the outermost point
++    // reveals here; the Dual host reveals from its resize band beyond it.
++    if (helium_dual::IsPane(browser()->helium_dual_role())) {
++      return point.x() >= width() - 1 && point.x() < width();
++    }
++#endif
+     return point.x() >= width() - kZenModeRevealTriggerThickness &&
+            point.x() < width();
+   }
+   return point.x() >= 0 && point.x() < kZenModeRevealTriggerThickness;
+ }
+ 
++#if BUILDFLAG(IS_MAC)
++void BrowserView::RevealZenModeSideChromeFromEdge() {
++  if (!zen_mode_enabled_ || zen_reveal_paused_ ||
++      !ShouldDrawVerticalTabStrip()) {
++    return;
++  }
++  zen_cursor_exit_timer_.Stop();
++  // Keep the toolbar as it is; the timer below collapses both together.
++  UpdateZenModeReveal(/*reveal_top=*/zen_top_chrome_animation_.IsShowing(),
++                      /*reveal_side=*/true);
++  // The pane sees no pointer events while the pointer stays in the band.
++  // Collapse as after leaving the window, unless it moves into the strip.
++  StartZenCollapseTimer(kZenModeCursorExitGracePeriod);
++}
++#endif
++
+ namespace {
+ 
+ bool IsOpenBubbleAnchoredInViewSubtree(views::Widget* widget,
+@@ -2210,6 +2251,19 @@
+       !vertical_tab_strip_region_view_->parent()) {
+     return false;
+   }
++#if BUILDFLAG(IS_MAC)
++  // A hidden Dual strip facing the scroll bar side would otherwise reveal
++  // from its hover leeway, over the page's scroll bar. Only its trigger (or
++  // the Dual host's band) reveals it; the leeway then keeps it open.
++  if (helium_dual::IsPane(browser()->helium_dual_role()) &&
++      !zen_side_chrome_animation_.IsShowing()) {
++    const auto* controller =
++        tabs::VerticalTabStripStateController::From(browser_.get());
++    if (controller && controller->IsTabStripRightAligned()) {
++      return false;
++    }
++  }
++#endif
+   gfx::Rect bounds = views::View::ConvertRectToTarget(
+       vertical_tab_strip_region_view_->parent(), this,
+       vertical_tab_strip_region_view_->bounds());
+@@ -2260,8 +2314,15 @@
    BrowserActiveStateManager::From(browser())->DidBecomeActive();
  #endif
  
@@ -1772,7 +1859,7 @@
      browser_widget_->Activate();
      return;
    }
-@@ -2284,6 +2302,9 @@
+@@ -2284,6 +2345,9 @@
    }
  
    OnWindowDidShow();
@@ -1782,7 +1869,7 @@
  
    // The fullscreen transition clears out focus, but there are some cases (for
    // example, new window in Mac fullscreen with toolbar showing) where we need
-@@ -2303,9 +2324,15 @@
+@@ -2303,9 +2367,15 @@
  }
  
  void BrowserView::ShowInactive() {
@@ -1798,22 +1885,20 @@
  }
  
  void BrowserView::Hide() {
-@@ -2324,8 +2351,14 @@
-   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-   exclusive_access_context_->ExitFullscreen();
-   if (!weak_ptr) {
-+    return;
-+  }
-+
-+#if BUILDFLAG(IS_MAC)
-+  if (helium_dual::SetHostBounds(this, bounds)) {
+@@ -2327,6 +2397,12 @@
      return;
    }
-+#endif
  
++#if BUILDFLAG(IS_MAC)
++  if (helium_dual::SetHostBounds(this, bounds)) {
++    return;
++  }
++#endif
++
    // If the BrowserFrameView has been created, give it a chance to handle the
    // BrowserWidget's bounds change.
-@@ -2784,6 +2817,11 @@
+   if (auto* const frame_view = GetFrameView()) {
+@@ -2784,6 +2860,11 @@
  }
  
  gfx::Rect BrowserView::GetRestoredBounds() const {
@@ -1825,7 +1910,7 @@
    gfx::Rect bounds;
    ui::mojom::WindowShowState state = ui::mojom::WindowShowState::kDefault;
    browser_widget_->GetWindowPlacement(&bounds, &state);
-@@ -2791,6 +2829,15 @@
+@@ -2791,6 +2872,15 @@
  }
  
  ui::mojom::WindowShowState BrowserView::GetRestoredState() const {
@@ -1841,7 +1926,7 @@
    gfx::Rect bounds;
    ui::mojom::WindowShowState state = ui::mojom::WindowShowState::kDefault;
    browser_widget_->GetWindowPlacement(&bounds, &state);
-@@ -2798,6 +2845,11 @@
+@@ -2798,6 +2888,11 @@
  }
  
  gfx::Rect BrowserView::GetBounds() const {
@@ -1853,7 +1938,7 @@
    return browser_widget_->GetWindowBoundsInScreen();
  }
  
-@@ -2850,26 +2902,56 @@
+@@ -2850,26 +2945,56 @@
  }
  
  bool BrowserView::IsMaximized() const {
@@ -1910,7 +1995,7 @@
    return browser_widget_->IsFullscreen();
  }
  
-@@ -2953,7 +3035,13 @@
+@@ -2953,7 +3078,13 @@
  
    multi_contents_view_->OnFullscreenStateChanged();
  
@@ -1925,7 +2010,7 @@
      ToolbarSizeChanged(false);
      GetFrameView()->OnFullscreenStateChanged();
  
-@@ -2973,6 +3061,14 @@
+@@ -2973,6 +3104,14 @@
    UpdateZenModeState();
  }
  
@@ -1940,7 +2025,7 @@
  ToolbarButtonProvider* BrowserView::toolbar_button_provider() {
    return ToolbarButtonProvider::From(browser_);
  }
-@@ -4286,6 +4382,11 @@
+@@ -4286,6 +4425,11 @@
  // BrowserView, views::WidgetDelegate implementation:
  
  bool BrowserView::CanResize() const {
@@ -1952,7 +2037,7 @@
    return WidgetDelegate::CanResize() &&
           GetWebApiWindowResizable().value_or(true);
  }
-@@ -4798,6 +4899,13 @@
+@@ -4798,6 +4942,13 @@
  #endif  // IS_MAC
  
  void BrowserView::OnWidgetDestroying(views::Widget* widget) {
@@ -1966,7 +2051,7 @@
    DCHECK(widget_observation_.IsObservingSource(widget));
    widget_observation_.Reset();
    // Destroy any remaining WebContents early on. Doing so may result in
-@@ -5270,7 +5378,13 @@
+@@ -5270,7 +5421,13 @@
      // Tab strip isn't empty.  Hide the frame (so it appears to have closed
      // immediately) and close all the tabs, allowing the renderers to shut
      // down. When the tab strip is empty we'll be called back again.
@@ -1981,7 +2066,7 @@
      result = views::CloseRequestResult::kCannotClose;
    }
  
-@@ -6243,6 +6357,11 @@
+@@ -6243,6 +6400,11 @@
  }
  
  void BrowserView::ProcessFullscreen(bool fullscreen, const int64_t display_id) {
@@ -1993,7 +2078,7 @@
    CHECK(!base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState));
  
    if (in_process_fullscreen_) {
-@@ -6278,6 +6397,11 @@
+@@ -6278,6 +6440,11 @@
  }
  
  void BrowserView::RequestFullscreen(bool fullscreen, int64_t display_id) {
@@ -2008,13 +2093,25 @@
 --- a/chrome/browser/ui/views/frame/browser_view.h
 +++ b/chrome/browser/ui/views/frame/browser_view.h
 @@ -1,3 +1,6 @@
-+// Dual: unofficial modifications of Helium, 2026-09-08 to 2026-09-25 (Dual 6.2.2).
++// Dual: unofficial modifications of Helium, 2026-09-08 to 2026-10-04 (Dual 6.2.3).
 +// Modifications Copyright 2026 Dual contributors; GPL-3.0-only.
 +// Original third-party notices and licenses below remain applicable.
  // Copyright 2012 The Chromium Authors
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
-@@ -451,6 +454,11 @@
+@@ -435,6 +438,11 @@
+   // Toggles the side chrome (VTS) visibility in zen mode.
+   void ToggleZenModeSideChrome();
+   void ToggleZenModeTopChrome();
++#if BUILDFLAG(IS_MAC)
++  // Dual: the pointer reached the shared window's resize band beyond the
++  // edge this pane's vertical tab strip faces. Reveal it as the trigger would.
++  void RevealZenModeSideChromeFromEdge();
++#endif
+ 
+   // Returns the widget for anchoring bubbles and dialogs.
+   // This returns BrowserWidget except on fullscreen macOS where the toolbar is
+@@ -451,6 +459,11 @@
    // Called during the widget's fullscreen state changes without going through
    // FullscreenController. This method does any processing which was skipped.
    void FullscreenStateChanging();
@@ -2231,14 +2328,15 @@
        !is_in_split && ShouldUseRoundedFrame();
 --- a/chrome/browser/ui/views/frame/vertical_tab_strip_region_view.cc
 +++ b/chrome/browser/ui/views/frame/vertical_tab_strip_region_view.cc
-@@ -1,3 +1,6 @@
+@@ -1,3 +1,7 @@
 +// Modified by Dual contributors on 2026-09-13: persistent close glyph for pane hiding.
++// Modified by Dual contributors on 2026-10-03: the glyph sits toward the outer edge.
 +// These modifications are licensed under GPL-3.0; original notices are retained.
 +
  // Copyright 2025 The Chromium Authors
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
-@@ -39,6 +42,13 @@
+@@ -39,6 +43,13 @@
  #include "chrome/browser/ui/views/frame/shadow_frame_view.h"
  #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
  #include "chrome/browser/ui/views/helium/frame_corner_radius.h"
@@ -2252,7 +2350,7 @@
  #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
  #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
  #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
-@@ -123,6 +133,34 @@
+@@ -123,6 +134,37 @@
                                     views::MinimumFlexSizeRule::kPreferred,
                                     views::MaximumFlexSizeRule::kPreferred));
  
@@ -2271,7 +2369,10 @@
 +        features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
 +                                          : vector_icons::kCloseOldIcon,
 +        kColorToolbarButtonIconDisabled, 16));
-+    button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
++    // Toward the window's outer edge, like the strip itself.
++    button->SetHorizontalAlignment(state_controller_->IsTabStripRightAligned()
++                                       ? gfx::HorizontalAlignment::ALIGN_RIGHT
++                                       : gfx::HorizontalAlignment::ALIGN_LEFT);
 +    button->SetLabelInsets(gfx::Insets::VH(4, 7), gfx::Insets::VH(4, 7));
 +    button->SetShouldShowLabel(false);
 +    button->SetPreferredSize(gfx::Size(-1, GetLayoutConstant(LayoutConstant::kVerticalTabHeight)));
@@ -2287,7 +2388,7 @@
    bottom_button_container_ =
        AddChildView(std::make_unique<VerticalTabStripBottomContainer>(
            state_controller_, root_action_item, browser_view->browser(),
-@@ -180,6 +218,7 @@
+@@ -180,6 +222,7 @@
  }
  
  VerticalTabStripRegionView::~VerticalTabStripRegionView() {
@@ -2295,7 +2396,7 @@
    for (const auto& lock : hover_locks_) {
      lock->ClearRegionViewOnDestruction();
    }
-@@ -356,8 +395,14 @@
+@@ -356,8 +399,14 @@
  }
  
  void VerticalTabStripRegionView::Layout(PassKey) {
@@ -2311,7 +2412,7 @@
    // Manually position the resize area as it overlaps views handled by the flex
    // layout.
    const int resize_area_x = state_controller_->IsTabStripRightAligned()
-@@ -705,7 +750,17 @@
+@@ -705,7 +754,17 @@
  
  void VerticalTabStripRegionView::ClickEventHandler::OnMouseEvent(
      ui::MouseEvent* event) {
@@ -2329,7 +2430,7 @@
        region_view_->state_controller_->IsExpandOnHoverEnabled() &&
        !region_view_->is_expanded_on_hover()) {
      region_view_->RestartExpandOnHoverTimer(
-@@ -932,7 +987,7 @@
+@@ -932,7 +991,7 @@
          base::BindOnce(&VerticalTabStripRegionView::AnimateExpandOnHover,
                         base::Unretained(this),
                         /*expand=*/true));
@@ -2338,7 +2439,7 @@
        AddPreTargetHandler(&click_handler_);
      }
    }
-@@ -1024,7 +1079,7 @@
+@@ -1024,7 +1083,7 @@
    if (expand_on_hover_timer_.IsRunning()) {
      expand_on_hover_timer_.Stop();
  
@@ -2985,6 +3086,117 @@
      ]
  
      inputs = [
+--- a/components/helium_onboarding/src/components/HeliumPartner.svelte
++++ b/components/helium_onboarding/src/components/HeliumPartner.svelte
+@@ -1,13 +1,14 @@
++<!-- Modified by Dual contributors on 2026-10-04: no Helium logo in Dual. GPL-3.0; original notices are retained in LICENSE. -->
+ <script lang="ts">
+-    import { HeliumLogo, Tooltip } from "@imput/helium-prism";
++    import { Tooltip } from "@imput/helium-prism";
+     import { s } from "../lib/strings";
+ </script>
+ 
+ <div class="helium-partner">
+     <Tooltip>
+         {#snippet anchor()}
++            <!-- Dual shows no Helium logo; the text still names Helium's program. -->
+             <div class="helium-partner-badge">
+-                <HeliumLogo height="13px" />
+                 {s.partner.title}
+             </div>
+         {/snippet}
+--- a/components/helium_onboarding/src/pages/Finish.svelte
++++ b/components/helium_onboarding/src/pages/Finish.svelte
+@@ -1,10 +1,11 @@
++<!-- Modified by Dual contributors on 2026-10-03: Dual's logo in place of Helium's. GPL-3.0; original notices are retained in LICENSE. -->
+ <script lang="ts">
+     import {
+         Button,
+-        HeliumLogo,
+         IconArrowLeft,
+         IconCheck,
+     } from "@imput/helium-prism";
++    import DualLogo from "../components/DualLogo.svelte";
+     import { s } from "../lib/strings";
+     import { setPref } from "../lib/browser";
+     import { currentPage, previousPage } from "../lib/onboarding-flow";
+@@ -26,7 +27,7 @@
+         <div id="finish-top">
+             <div id="finish-logo-text">
+                 <div id="finish-logo">
+-                    <HeliumLogo height="64px" />
++                    <DualLogo height="64px" />
+                 </div>
+                 <div id="finish-text">
+                     <h1>{s.finish.title}</h1>
+@@ -84,4 +85,4 @@
+     #finish-text p {
+         font-size: 20px;
+     }
+-</style>
++</style>
+\ No newline at end of file
+--- a/components/helium_onboarding/src/pages/HeliumServices.svelte
++++ b/components/helium_onboarding/src/pages/HeliumServices.svelte
+@@ -1,5 +1,6 @@
++<!-- Modified by Dual contributors on 2026-10-04: a generic icon in place of Helium's logo. GPL-3.0; original notices are retained in LICENSE. -->
+ <script lang="ts">
+-    import { CardLink, HeliumLogo } from "@imput/helium-prism";
++    import { CardLink, IconWorld } from "@imput/helium-prism";
+     import { s } from "../lib/strings";
+     import { platform } from "../lib/platform";
+     import { currentPage } from "../lib/onboarding-flow";
+@@ -23,7 +24,7 @@
+         <PageHeader
+             title={s.services.title}
+             subtitle={s.services.subtitle}
+-            Icon={HeliumLogo}
++            Icon={IconWorld}
+             iconHeight="32px"
+         />
+         <div class="page-content">
+--- a/components/helium_onboarding/src/pages/Welcome.svelte
++++ b/components/helium_onboarding/src/pages/Welcome.svelte
+@@ -1,12 +1,13 @@
++<!-- Modified by Dual contributors on 2026-10-03: Dual's logo in place of Helium's. GPL-3.0; original notices are retained in LICENSE. -->
+ <script lang="ts">
+     import { flushSync, onMount } from "svelte";
+     import {
+         Button,
+-        HeliumLogo,
+         IconArrowRight,
+         IconCheck,
+         Link,
+     } from "@imput/helium-prism";
++    import DualLogo from "../components/DualLogo.svelte";
+     import { s } from "../lib/strings";
+     import { parseLocalizedString } from "../lib/i18n";
+     import { setPref, acceptLatestSchema } from "../lib/browser";
+@@ -70,7 +71,7 @@
+ 
+ {#if introLogoVisible}
+     <div id="welcome-logo-intro">
+-        <HeliumLogo height="84px" />
++        <DualLogo height="84px" />
+     </div>
+ {/if}
+ 
+@@ -85,7 +86,7 @@
+         <div id="welcome-top">
+             <div id="welcome-logo-text">
+                 <div id="welcome-logo" class:visible={finalLogoVisible}>
+-                    <HeliumLogo height="48px" />
++                    <DualLogo height="48px" />
+                 </div>
+                 <div id="welcome-text">
+                     <h1>
+@@ -339,4 +340,4 @@
+             }
+         }
+     }
+-</style>
++</style>
+\ No newline at end of file
 --- a/components/omnibox/browser/test_location_bar_model.cc
 +++ b/components/omnibox/browser/test_location_bar_model.cc
 @@ -1,3 +1,6 @@
@@ -3495,32 +3707,6 @@
    void SetSupportsDraggableRegions(bool supports_draggable_regions) override;
  
    mojo::AssociatedReceiver<blink::mojom::PageBroadcast> receiver_;
---- a/ui/base/cocoa/remote_layer_api.mm
-+++ b/ui/base/cocoa/remote_layer_api.mm
-@@ -1,3 +1,6 @@
-+// Modified by Dual contributors on 2026-09-13: local GPU surface presentation.
-+// These modifications are licensed under GPL-3.0; original notices are retained.
-+
- // Copyright 2014 The Chromium Authors
- // Use of this source code is governed by a BSD-style license that can be
- // found in the LICENSE file.
-@@ -13,7 +16,16 @@
- namespace {
- // Control use of cross-process CALayers to display content directly from the
- // GPU process on Mac.
-+#if BUILDFLAG(IS_MAC)
-+// Dual's right pane moves and resizes together. Present the completed GPU
-+// IOSurface in the browser's local CALayer tree so content and native geometry
-+// commit together, without remote-context resize jitter or V2 context flicker.
-+// This uses Chromium's existing GPU compositor fallback; it does not disable
-+// GPU rendering or hardware video decoding. Explicit feature flags still win.
-+BASE_FEATURE(kRemoteCoreAnimationAPI, base::FEATURE_DISABLED_BY_DEFAULT);
-+#else
- BASE_FEATURE(kRemoteCoreAnimationAPI, base::FEATURE_ENABLED_BY_DEFAULT);
-+#endif
- }  // namespace
- 
- bool RemoteLayerAPISupported() {
 --- a/third_party/blink/public/mojom/frame/remote_frame.mojom
 +++ b/third_party/blink/public/mojom/frame/remote_frame.mojom
 @@ -1,3 +1,5 @@
@@ -3769,6 +3955,32 @@
          stdout=subprocess.PIPE,
          stderr=subprocess.PIPE,
          universal_newlines=True,
+--- a/ui/base/cocoa/remote_layer_api.mm
++++ b/ui/base/cocoa/remote_layer_api.mm
+@@ -1,3 +1,6 @@
++// Modified by Dual contributors on 2026-09-13: local GPU surface presentation.
++// These modifications are licensed under GPL-3.0; original notices are retained.
++
+ // Copyright 2014 The Chromium Authors
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+@@ -13,7 +16,16 @@
+ namespace {
+ // Control use of cross-process CALayers to display content directly from the
+ // GPU process on Mac.
++#if BUILDFLAG(IS_MAC)
++// Dual's right pane moves and resizes together. Present the completed GPU
++// IOSurface in the browser's local CALayer tree so content and native geometry
++// commit together, without remote-context resize jitter or V2 context flicker.
++// This uses Chromium's existing GPU compositor fallback; it does not disable
++// GPU rendering or hardware video decoding. Explicit feature flags still win.
++BASE_FEATURE(kRemoteCoreAnimationAPI, base::FEATURE_DISABLED_BY_DEFAULT);
++#else
+ BASE_FEATURE(kRemoteCoreAnimationAPI, base::FEATURE_ENABLED_BY_DEFAULT);
++#endif
+ }  // namespace
+ 
+ bool RemoteLayerAPISupported() {
 --- /dev/null
 +++ b/chrome/browser/sessions/helium_dual_app_menu_unittest.cc
 @@ -0,0 +1,67 @@
@@ -4287,8 +4499,8 @@
 +}  // namespace
 --- /dev/null
 +++ b/chrome/browser/ui/helium/helium_dual_browser_mac.h
-@@ -0,0 +1,51 @@
-+// Modified by Dual contributors on 2026-09-12: pane resizing and non-destructive hiding.
+@@ -0,0 +1,56 @@
++// Modified by Dual contributors on 2026-10-03: Zen mode rails and window controls.
 +// These modifications are licensed under GPL-3.0; original notices are retained.
 +
 +// Copyright 2026 Helium Dual contributors.
@@ -4315,6 +4527,11 @@
 +// True for the pane that shows the shared window's close/minimize/fullscreen
 +// controls; its layout reserves their area like a normal window's titlebar.
 +bool PaneShowsWindowControls(const BrowserView* view);
++// Zen mode state changed for this pane; the shared window's outer rails hide
++// and reveal like Helium's side chrome while it is on.
++void OnZenModeChanged(const BrowserView* view);
++// Zen mode fades a pane's toolbar; the window controls it shows follow.
++void SetPaneWindowControlsOpacity(const BrowserView* view, float opacity);
 +void SetPaneHidden(BrowserView* view, bool hidden);
 +void EnsureHost(BrowserView* view, bool completing_tab_drag = false);
 +// Keep Chromium's native tab move loop on a temporarily independent pane.
@@ -4341,8 +4558,8 @@
 +#endif  // CHROME_BROWSER_UI_HELIUM_HELIUM_DUAL_BROWSER_MAC_H_
 --- /dev/null
 +++ b/chrome/browser/ui/helium/helium_dual_browser_mac.mm
-@@ -0,0 +1,1598 @@
-+// Modified by Dual contributors on 2026-09-23: pane lifetime and drag-hidden state.
+@@ -0,0 +1,1661 @@
++// Modified by Dual contributors on 2026-10-03 and 2026-10-04: Zen mode rails and window controls.
 +// These modifications are licensed under GPL-3.0; original notices are retained.
 +
 +// Copyright 2026 Helium Dual contributors.
@@ -4400,6 +4617,7 @@
 +#include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 +#include "ui/views/view_tracker.h"
 +#include "chrome/browser/ui/tabs/tab_strip_model.h"
++#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 +#include "chrome/browser/ui/unload_controller.h"
 +#include "chrome/browser/ui/views/frame/browser_view.h"
 +#include "chrome/browser/ui/views/frame/browser_widget.h"
@@ -4684,7 +4902,31 @@
 +    }
 +    UpdateRailStyle();
 +    UpdateWindowControlsOwner();
++    ScheduleZenState();
 +    ScheduleSave();
++  }
++
++  void ScheduleZenState() {
++    if (!zen_state_timer_.IsRunning()) {
++      zen_state_timer_.Start(FROM_HERE, base::TimeDelta(), this,
++                             &BrowserPair::UpdateZenState);
++    }
++  }
++
++  // In Zen mode the outer rails hide like Helium's side chrome, unless that
++  // chrome is pinned. Each pane's window controls follow its toolbar.
++  void UpdateZenState() {
++    bool auto_hide = false;
++    for (Browser* browser : browsers_) {
++      auto* view =
++          browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
++      if (!view || !view->GetWidget()) continue;
++      auto_hide |= view->IsZenModeEnabledForLayout() &&
++                   !view->IsZenModeSideChromePinned();
++      [host_ setWindowControlsAlpha:view->GetTopChromeRevealRatio()
++                            forPane:view->GetNativeWindow().GetNativeNSWindow()];
++    }
++    host_.autoHideRails = auto_hide;
 +  }
 +
 +  // Use the actual pane's resolved theme, including explicit light/dark mode
@@ -5182,6 +5424,7 @@
 +    }
 +    UpdateWindowControlsOwner();
 +    ScheduleRailStyle();
++    ScheduleZenState();
 +  }
 +
 +  bool IsPaneSuspended(const BrowserView* view) const {
@@ -5315,6 +5558,21 @@
 +    creating_pane_ = false;
 +  }
 +
++  // Zen mode: the host's resize band beyond |pane| stands in for that pane's
++  // edge trigger. Only a strip that faces |edge| reveals.
++  void RevealZenSideChrome(HeliumDualPaneSide edge, HeliumDualPaneSide pane) {
++    Browser* browser = browsers_[pane == HeliumDualPaneSideRight ? 1 : 0];
++    auto* view =
++        browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
++    auto* strip =
++        browser ? tabs::VerticalTabStripStateController::From(browser) : nullptr;
++    if (!view || !strip ||
++        strip->IsTabStripRightAligned() != (edge == HeliumDualPaneSideRight)) {
++      return;
++    }
++    view->RevealZenModeSideChromeFromEdge();
++  }
++
 +  void Activated(HeliumDualPaneSide side) {
 +    Browser* browser = browsers_[side == HeliumDualPaneSideRight ? 1 : 0];
 +    // AppKit may activate a native child during teardown after Chromium has
@@ -5384,6 +5642,7 @@
 +        }
 +      }
 +    }
++    ScheduleZenState();
 +    ScheduleSave();
 +  }
 +
@@ -5599,6 +5858,7 @@
 +  // Renderer resize deadlines held across an asynchronous divider drag.
 +  std::optional<ScopedNativeContentsResize> drag_resize_;
 +  base::OneShotTimer rail_style_timer_;
++  base::OneShotTimer zen_state_timer_;
 +  base::OneShotTimer save_timer_;
 +  // Close cancellation invalidates asynchronous close/preflight callbacks,
 +  // but a live pair still needs its synchronous resize/drag liveness checks.
@@ -5635,6 +5895,19 @@
 +  return pair && view->GetWidget() &&
 +         pair->host().windowControlsPane ==
 +             view->GetNativeWindow().GetNativeNSWindow();
++}
++void OnZenModeChanged(const BrowserView* view) {
++  // Deferred: this runs inside BrowserView's own Zen update, and the host
++  // relayout it can cause resizes that BrowserView.
++  if (auto* pair = view ? Find(view) : nullptr) pair->ScheduleZenState();
++}
++void SetPaneWindowControlsOpacity(const BrowserView* view, float opacity) {
++  auto* pair = view ? Find(view) : nullptr;
++  if (pair && view->GetWidget()) {
++    [pair->host() setWindowControlsAlpha:opacity
++                                 forPane:view->GetNativeWindow()
++                                             .GetNativeNSWindow()];
++  }
 +}
 +bool CanHidePane(const BrowserView* view) {
 +  auto* pair = Find(view);
@@ -5917,6 +6190,13 @@
 +  }
 +}
 +- (void)heliumDualWindowHost:(HeliumDualWindowHost*)host
++          pointerReachedEdge:(HeliumDualPaneSide)edge
++                      ofPane:(HeliumDualPaneSide)pane {
++  if (self.pair) {
++    self.pair->RevealZenSideChrome(edge, pane);
++  }
++}
++- (void)heliumDualWindowHost:(HeliumDualWindowHost*)host
 +          setLeftPaneFrame:(NSRect)leftFrame
 +            rightPaneFrame:(NSRect)rightFrame {
 +  if (self.pair) self.pair->SetPaneFrames(leftFrame, rightFrame);
@@ -6159,8 +6439,8 @@
 +}
 --- /dev/null
 +++ b/chrome/browser/ui/helium/helium_dual_window_host_mac.h
-@@ -0,0 +1,116 @@
-+// Modified by Dual contributors on 2026-09-12: pane resizing and non-destructive hiding.
+@@ -0,0 +1,127 @@
++// Modified by Dual contributors on 2026-10-03 and 2026-10-04: edge resizing and Zen mode rails.
 +// These modifications are licensed under GPL-3.0; original notices are retained.
 +
 +// Copyright 2026 Helium Dual contributors.
@@ -6226,6 +6506,11 @@
 +         didChangeFullscreen:(BOOL)fullscreen;
 +- (void)heliumDualWindowHost:(HeliumDualWindowHost*)host
 +         didChangeSplitRatio:(double)ratio;
++// Zen mode: the pointer is in the resize band beyond |pane| at |edge|. The
++// pane reveals its own tab strip if that strip faces this edge.
++- (void)heliumDualWindowHost:(HeliumDualWindowHost*)host
++          pointerReachedEdge:(HeliumDualPaneSide)edge
++                      ofPane:(HeliumDualPaneSide)pane;
 +@end
 +
 +// Pure AppKit helper. Real Chromium BrowserWidgets remain top-level Widgets,
@@ -6249,6 +6534,9 @@
 +// The pane showing the window controls (close/minimize/fullscreen) because it
 +// covers the host's hidden titlebar, or nil.
 +@property(nonatomic, readonly, nullable) NSWindow* windowControlsPane;
++// Zen mode: an outer rail (a collapsed pane's tab strip, or the launch rail
++// beside a lone pane) stays hidden until the pointer reaches that window edge.
++@property(nonatomic) BOOL autoHideRails;
 +
 +- (instancetype)initWithContentRect:(NSRect)contentRect
 +                              title:(NSString*)title NS_DESIGNATED_INITIALIZER;
@@ -6267,6 +6555,9 @@
 +- (BOOL)isPaneHidden:(HeliumDualPaneSide)side;
 +- (void)setPaneHidden:(BOOL)hidden side:(HeliumDualPaneSide)side;
 +- (void)applyRailStyle:(HeliumDualRailStyle*)style;
++// Zen mode fades a pane's toolbar; the window controls shown inside that pane
++// follow its opacity and stop taking clicks once fully hidden.
++- (void)setWindowControlsAlpha:(CGFloat)alpha forPane:(NSWindow*)pane;
 +- (void)toggleFullscreen;
 +- (void)requestFullscreen:(BOOL)fullscreen;
 +- (void)closeAfterBrowserShutdown;
@@ -6278,8 +6569,8 @@
 +#endif  // HELIUM_DUAL_WINDOW_HOST_MAC_H_
 --- /dev/null
 +++ b/chrome/browser/ui/helium/helium_dual_window_host_mac.mm
-@@ -0,0 +1,1314 @@
-+// Modified by Dual contributors on 2026-09-23: divider release detection and live pointer tracking.
+@@ -0,0 +1,1858 @@
++// Modified by Dual contributors on 2026-10-03 and 2026-10-04: edge resizing, Zen mode rails and window controls.
 +// These modifications are licensed under GPL-3.0; original notices are retained.
 +
 +// Copyright 2026 Helium Dual contributors.
@@ -6298,6 +6589,20 @@
 +constexpr CGFloat kDividerWidth = 6;
 +constexpr CGFloat kMinimumPaneWidth = 360;
 +constexpr CGFloat kMinimumContentHeight = 360;
++// Outside fullscreen, panes stop this far from the host's sides and bottom.
++// AppKit's resize band reaches about this far inside a window's edge, and a
++// pane covering it would swallow the press that starts a native resize.
++constexpr CGFloat kResizeEdgeInset = 3;
++// Zen mode rails reveal like Helium's side chrome, but only from the host's
++// own resize band: a page's scroll bar runs along the pane's outer edge, and
++// a press meant for it must not land on a rail that just appeared. Fullscreen
++// has no band; there only the outermost points of the screen reveal a rail.
++constexpr CGFloat kRailRevealFullscreenTrigger = 2;
++constexpr CGFloat kRailRevealLeeway = 8;
++constexpr NSTimeInterval kRailRevealDuration = 0.2;
++constexpr NSTimeInterval kRailHoverExitGrace = 0.15;
++constexpr NSTimeInterval kRailCursorExitGrace = 3.0;
++constexpr NSTimeInterval kRailPollInterval = 0.1;
 +
 +// Setting an unchanged NSCursor still synchronously talks to WindowServer.
 +// During live resize AppKit can change it between callbacks, so consult the
@@ -6305,6 +6610,30 @@
 +void SetCursorIfNeeded(NSCursor* cursor) {
 +  if (NSCursor.currentCursor != cursor) {
 +    [cursor set];
++  }
++}
++
++// What a double-click on a titlebar does, per the system setting.
++void PerformTitlebarDoubleClick(NSWindow* window) {
++  NSString* action = [NSUserDefaults.standardUserDefaults
++      stringForKey:@"AppleActionOnDoubleClick"];
++  if ([action isEqualToString:@"Minimize"]) {
++    [window miniaturize:nil];
++  } else if (![action isEqualToString:@"None"]) {
++    [window zoom:nil];
++  }
++}
++
++// --dual-rail-trace: log Zen rail decisions to stderr.
++BOOL RailTraceEnabled() {
++  static const BOOL enabled =
++      [NSProcessInfo.processInfo.arguments containsObject:@"--dual-rail-trace"];
++  return enabled;
++}
++
++void SetPaneInteractive(NSWindow* window, BOOL visible) {
++  if (window.ignoresMouseEvents == visible) {
++    window.ignoresMouseEvents = !visible;
 +  }
 +}
 +}  // namespace
@@ -6420,8 +6749,23 @@
 +- (void)updateWindowControls;
 +- (CGFloat)windowCornerRadius;
 +- (CGFloat)minimumContentWidth;
++- (CGFloat)edgeInset;
 +- (void)beginFullscreenTransition:(BOOL)fullscreen;
 +- (void)completeFullscreenTransition:(BOOL)fullscreen;
++- (BOOL)hideableRailEdge:(HeliumDualPaneSide*)edge;
++- (nullable NSWindow*)railRevealWindow;
++- (void)pointerMoved;
++- (void)evaluatePointer:(NSPoint)point;
++- (void)setPointerPolling:(BOOL)polling;
++- (nullable NSWindow*)paneAtEdge:(HeliumDualPaneSide)edge
++                            side:(HeliumDualPaneSide*)side;
++- (void)setRailRevealed:(BOOL)revealed;
++- (void)applyRailVisibilityAnimated:(BOOL)animated;
++- (void)scheduleRailHide:(NSTimeInterval)delay;
++- (void)cancelRailHide;
++- (void)updatePointerMonitor;
++- (void)requestMissingPane:(nullable id)sender;
++- (void)applyWindowControlsAlpha;
 +@end
 +
 +@interface HeliumDualDividerView : NSView
@@ -6767,11 +7111,18 @@
 +}
 +@end
 +
++// The host's own surface: the launch rails and the thin resize bands around
++// the panes. Its empty areas move the window like a titlebar.
 +@interface HeliumDualBackgroundView : NSView
 +@property(nonatomic, strong) HeliumDualRailStyle* railStyle;
++// Called when the pointer enters or moves over the host's own surface.
++@property(nonatomic, copy, nullable) void (^pointerHandler)(void);
 +@end
-+@implementation HeliumDualBackgroundView
++@implementation HeliumDualBackgroundView {
++  NSTrackingArea* _trackingArea;
++}
 +@synthesize railStyle = _railStyle;
++@synthesize pointerHandler = _pointerHandler;
 +- (BOOL)isOpaque {
 +  return YES;
 +}
@@ -6780,7 +7131,7 @@
 +  NSRectFill(dirtyRect);
 +  NSImage* image = self.railStyle.backgroundImage;
 +  if (image) {
-+    const CGFloat width = self.railStyle.width;
++    const CGFloat width = self.railStyle.width + kResizeEdgeInset;
 +    for (CGFloat x : {CGFloat(0), NSWidth(self.bounds) - width}) {
 +      [image drawInRect:NSMakeRect(x, 0, width, NSHeight(self.bounds))
 +                fromRect:NSZeroRect
@@ -6790,6 +7141,77 @@
 +                   hints:nil];
 +    }
 +  }
++}
++- (void)updateTrackingAreas {
++  [super updateTrackingAreas];
++  if (_trackingArea) {
++    [self removeTrackingArea:_trackingArea];
++  }
++  // The host is never key, so pointer movement over its edge bands reaches
++  // the app only through this area. Zen mode rails reveal from those bands.
++  // Moving from a pane onto a band often yields only an entered event.
++  _trackingArea = [[NSTrackingArea alloc]
++      initWithRect:NSZeroRect
++           options:NSTrackingMouseMoved | NSTrackingMouseEnteredAndExited |
++                   NSTrackingActiveInActiveApp | NSTrackingInVisibleRect
++             owner:self
++          userInfo:nil];
++  [self addTrackingArea:_trackingArea];
++}
++- (void)mouseEntered:(NSEvent*)event {
++  if (self.pointerHandler) self.pointerHandler();
++}
++- (void)mouseMoved:(NSEvent*)event {
++  if (self.pointerHandler) self.pointerHandler();
++}
++- (BOOL)mouseDownCanMoveWindow {
++  return YES;
++}
++- (BOOL)acceptsFirstMouse:(NSEvent*)event {
++  return YES;
++}
++- (void)mouseDown:(NSEvent*)event {
++  if (event.clickCount == 2) {
++    PerformTitlebarDoubleClick(self.window);
++    return;
++  }
++  [self.window performWindowDragWithEvent:event];
++}
++@end
++
++// Content of the launch rail shown above a lone pane in Zen mode.
++@interface HeliumDualRailOverlayView : NSView
++@property(nonatomic, strong) HeliumDualRailStyle* railStyle;
++@end
++@implementation HeliumDualRailOverlayView
++@synthesize railStyle = _railStyle;
++- (void)drawRect:(NSRect)dirtyRect {
++  [(self.railStyle.backgroundColor ?: NSColor.windowBackgroundColor) setFill];
++  NSRectFill(dirtyRect);
++  if (NSImage* image = self.railStyle.backgroundImage) {
++    [image drawInRect:self.bounds
++             fromRect:NSZeroRect
++            operation:NSCompositingOperationSourceOver
++             fraction:1
++       respectFlipped:YES
++                hints:nil];
++  }
++}
++- (BOOL)mouseDownCanMoveWindow {
++  return NO;
++}
++- (BOOL)acceptsFirstMouse:(NSEvent*)event {
++  return YES;
++}
++- (void)mouseDown:(NSEvent*)event {
++  // The overlay is a separate window; move the host it belongs to.
++  NSWindow* host = self.window.parentWindow;
++  if (!host) return;
++  if (event.clickCount == 2) {
++    PerformTitlebarDoubleClick(host);
++    return;
++  }
++  [host performWindowDragWithEvent:event];
 +}
 +@end
 +
@@ -6821,6 +7243,19 @@
 +  // Moves the shared window from a pane's draggable background.
 +  id _paneDragMonitor;
 +  __weak NSWindow* _windowControlsPane;
++  // Zen mode fades each pane's toolbar; its window controls follow.
++  CGFloat _windowControlsAlpha[2];
++  // Zen mode rails. A collapsed pane is revealed in place over its sibling;
++  // the launch rail beside a lone pane lives in this overlay window instead,
++  // because the pane would cover the host's own rail.
++  BOOL _autoHideRails;
++  BOOL _railRevealed;
++  NSWindow* _railOverlay;
++  HeliumDualRailOverlayView* _railOverlayView;
++  HeliumDualLaunchButton* _overlayLaunchButton;
++  id _pointerMonitor;
++  NSTimer* _railHideTimer;
++  NSTimer* _railPollTimer;
 +}
 +
 +@synthesize delegate = _delegate;
@@ -6833,6 +7268,7 @@
 +  }
 +  _splitRatio = 0.5;
 +  _hiddenRailWidth[0] = _hiddenRailWidth[1] = kDefaultLaunchRailWidth;
++  _windowControlsAlpha[0] = _windowControlsAlpha[1] = 1;
 +  _railStyle = [[HeliumDualRailStyle alloc] init];
 +  _activePane = HeliumDualPaneSideLeft;
 +  _notificationTokens = [[NSMutableArray alloc] init];
@@ -6853,9 +7289,10 @@
 +  _window.styleMask |= NSWindowStyleMaskFullSizeContentView;
 +  _window.titlebarAppearsTransparent = YES;
 +  _window.titleVisibility = NSWindowTitleHidden;
-+  _window.contentView = [[HeliumDualBackgroundView alloc]
++  HeliumDualBackgroundView* background = [[HeliumDualBackgroundView alloc]
 +      initWithFrame:NSMakeRect(0, 0, contentRect.size.width,
 +                               contentRect.size.height)];
++  _window.contentView = background;
 +  _window.contentMinSize =
 +      NSMakeSize([self minimumContentWidth], kMinimumContentHeight);
 +  _normalFrame = _window.frame;
@@ -6887,6 +7324,9 @@
 +  [_window.contentView addSubview:_leftLaunchButton];
 +
 +  __weak HeliumDualWindowHost* weakSelf = self;
++  background.pointerHandler = ^{
++    [weakSelf pointerMoved];
++  };
 +  NSNotificationCenter* center = NSNotificationCenter.defaultCenter;
 +  [_notificationTokens
 +      addObject:[center addObserverForName:NSWindowDidBecomeKeyNotification
@@ -6969,13 +7409,7 @@
 +      return event;
 +    }
 +    if (event.clickCount == 2) {
-+      NSString* action = [NSUserDefaults.standardUserDefaults
-+          stringForKey:@"AppleActionOnDoubleClick"];
-+      if ([action isEqualToString:@"Minimize"]) {
-+        [host->_window miniaturize:nil];
-+      } else if (![action isEqualToString:@"None"]) {
-+        [host->_window zoom:nil];
-+      }
++      PerformTitlebarDoubleClick(host->_window);
 +      return nil;
 +    }
 +    [host->_window performWindowDragWithEvent:event];
@@ -6990,6 +7424,11 @@
 +  if (_paneDragMonitor) {
 +    [NSEvent removeMonitor:_paneDragMonitor];
 +  }
++  if (_pointerMonitor) {
++    [NSEvent removeMonitor:_pointerMonitor];
++  }
++  [_railHideTimer invalidate];
++  [_railPollTimer invalidate];
 +  for (id token in _notificationTokens) {
 +    [NSNotificationCenter.defaultCenter removeObserver:token];
 +  }
@@ -6997,6 +7436,11 @@
 +  _divider.host = nil;
 +  _launchButton.target = nil;
 +  _leftLaunchButton.target = nil;
++  _overlayLaunchButton.target = nil;
++  if (_railOverlay) {
++    [_window removeChildWindow:_railOverlay];
++    [_railOverlay orderOut:nil];
++  }
 +  // Never close browser windows here: their BrowserWidgets own their teardown.
 +  if (_leftWindow.parentWindow == _window) {
 +    [_window removeChildWindow:_leftWindow];
@@ -7017,8 +7461,14 @@
 +  return _splitRatio;
 +}
 +- (CGFloat)minimumContentWidth {
-+  return (_leftWindow && _rightWindow) ? 2 * kMinimumPaneWidth + kDividerWidth
-+                                       : kMinimumPaneWidth + _railStyle.width;
++  return 2 * kResizeEdgeInset +
++         ((_leftWindow && _rightWindow) ? 2 * kMinimumPaneWidth + kDividerWidth
++                                        : kMinimumPaneWidth + _railStyle.width);
++}
++- (CGFloat)edgeInset {
++  // Fullscreen has nothing to resize; panes reach the screen edges there.
++  return (_window.styleMask & NSWindowStyleMaskFullScreen) ? 0
++                                                           : kResizeEdgeInset;
 +}
 +- (BOOL)hasRightPane {
 +  return _rightWindow != nil;
@@ -7096,6 +7546,10 @@
 +  if (pane.parentWindow == _window) {
 +    [_window removeChildWindow:pane];
 +  }
++  // A pane leaving while its Zen rail was hidden must not stay invisible.
++  pane.alphaValue = 1;
++  SetPaneInteractive(pane, YES);
++  _windowControlsAlpha[wasRight ? 1 : 0] = 1;
 +  _paneHidden[0] = _paneHidden[1] = NO;
 +  if (wasRight) {
 +    _rightWindow = nil;
@@ -7167,6 +7621,10 @@
 +    button.railStyle = style;
 +    button.needsDisplay = YES;
 +  }
++  _overlayLaunchButton.railStyle = style;
++  _overlayLaunchButton.needsDisplay = YES;
++  _railOverlayView.railStyle = style;
++  _railOverlayView.needsDisplay = YES;
 +  _window.contentMinSize =
 +      NSMakeSize([self minimumContentWidth], kMinimumContentHeight);
 +  // Palette/background updates must not feed native bounds notifications back
@@ -7216,51 +7674,146 @@
 +  }
 +  _layingOut = YES;
 +  _layoutPending = NO;
-+  NSRect content = _window.contentView.bounds;
++  const NSRect content = _window.contentView.bounds;
++  const CGFloat edge = [self edgeInset];
++  // Panes leave the host's resize band uncovered on the sides and bottom.
++  // The top stays flush: the pane toolbars replace the hidden titlebar.
++  const NSRect area = NSMakeRect(
++      edge, edge, std::max<CGFloat>(0, NSWidth(content) - 2 * edge),
++      std::max<CGFloat>(0, NSHeight(content) - edge));
 +  const BOOL bothPanes = _leftWindow && _rightWindow;
++  HeliumDualPaneSide railEdge = HeliumDualPaneSideRight;
++  const BOOL autoHideRail = [self hideableRailEdge:&railEdge];
++  if (!autoHideRail) {
++    [self cancelRailHide];
++    _railRevealed = NO;
++  }
 +  // A lone pane extends under the host rail by its extra edge padding so the
 +  // strips on both sides of its content look equally wide.
 +  const CGFloat hostRailWidth = std::max<CGFloat>(
 +      0, _railStyle.width - std::clamp<CGFloat>(_railStyle.paneEdgeInset, 0,
 +                                                _railStyle.width / 2));
-+  CGFloat leftWidth =
-+      std::max<CGFloat>(0, content.size.width - hostRailWidth);
-+  if (bothPanes) {
-+    CGFloat available =
-+        std::max<CGFloat>(0, content.size.width - kDividerWidth);
-+    CGFloat minimum = std::min<CGFloat>(kMinimumPaneWidth, available / 2);
-+    leftWidth = std::clamp<CGFloat>(std::round(available * _splitRatio),
-+                                    minimum, available - minimum);
++  NSRect leftRect = NSZeroRect;
++  NSRect rightRect = NSZeroRect;
++  BOOL showDivider = NO;
++  if (bothPanes && !_paneHidden[0] && !_paneHidden[1]) {
++    const CGFloat available =
++        std::max<CGFloat>(0, NSWidth(area) - kDividerWidth);
++    const CGFloat minimum = std::min<CGFloat>(kMinimumPaneWidth, available / 2);
++    const CGFloat leftWidth = std::clamp<CGFloat>(
++        std::round(available * _splitRatio), minimum, available - minimum);
++    leftRect = NSMakeRect(NSMinX(area), NSMinY(area), leftWidth, NSHeight(area));
++    const CGFloat rightX = NSMaxX(leftRect) + kDividerWidth;
++    rightRect = NSMakeRect(rightX, NSMinY(area),
++                           std::max<CGFloat>(0, NSMaxX(area) - rightX),
++                           NSHeight(area));
++    showDivider = YES;
++  } else if (bothPanes) {
++    // One pane collapsed to its tab strip at its outer edge. With Zen mode
++    // rails, the strip overlaps its sibling, which keeps the whole width.
++    const size_t hidden = _paneHidden[0] ? 0 : 1;
++    const CGFloat railWidth =
++        std::min(_hiddenRailWidth[hidden], NSWidth(area) / 2);
++    const NSRect railRect =
++        NSMakeRect(hidden == 0 ? NSMinX(area) : NSMaxX(area) - railWidth,
++                   NSMinY(area), railWidth, NSHeight(area));
++    NSRect paneRect = area;
++    if (!autoHideRail) {
++      paneRect.size.width -= railWidth;
++      if (hidden == 0) paneRect.origin.x += railWidth;
++    }
++    leftRect = hidden == 0 ? railRect : paneRect;
++    rightRect = hidden == 0 ? paneRect : railRect;
++  } else if (_leftWindow || _rightWindow) {
++    // A lone pane, with the launch rail for the other side beyond it.
++    const CGFloat rail = autoHideRail ? edge : hostRailWidth + edge;
++    const NSRect paneRect = NSMakeRect(
++        _leftWindow ? edge : rail, NSMinY(area),
++        std::max<CGFloat>(0, NSWidth(content) - rail - edge), NSHeight(area));
++    leftRect = _leftWindow ? paneRect : NSZeroRect;
++    rightRect = _rightWindow ? paneRect : NSZeroRect;
 +  }
-+  const BOOL collapsed = bothPanes && (_paneHidden[0] || _paneHidden[1]);
-+  if (collapsed) {
-+    leftWidth = _paneHidden[0] ? std::min(_hiddenRailWidth[0], content.size.width / 2)
-+                              : content.size.width - std::min(_hiddenRailWidth[1], content.size.width / 2);
-+  }
-+  const CGFloat dividerWidth = collapsed ? 0 : kDividerWidth;
-+  _divider.hidden = !bothPanes || collapsed;
-+  _divider.frame = NSMakeRect(leftWidth, 0, kDividerWidth, content.size.height);
-+  _launchButton.hidden = _rightWindow != nil;
++  _divider.hidden = !showDivider;
++  _divider.frame = NSMakeRect(NSMaxX(leftRect), NSMinY(area), kDividerWidth,
++                              NSHeight(area));
++  // Launch buttons mirror the pane tab strips' own button insets.
 +  const CGFloat buttonY =
 +      content.size.height - _railStyle.buttonTop - _railStyle.buttonHeight;
 +  const CGFloat buttonWidth =
 +      _railStyle.width - 2 * _railStyle.horizontalPadding;
++  _launchButton.hidden = _rightWindow != nil || autoHideRail;
 +  _launchButton.frame = NSMakeRect(
-+      content.size.width - _railStyle.width + _railStyle.horizontalPadding,
++      NSWidth(content) - edge - _railStyle.width + _railStyle.horizontalPadding,
 +      buttonY, buttonWidth, _railStyle.buttonHeight);
-+  _leftLaunchButton.hidden = _leftWindow != nil;
-+  _leftLaunchButton.frame = NSMakeRect(_railStyle.horizontalPadding, buttonY,
-+                                       buttonWidth, _railStyle.buttonHeight);
-+  NSRect leftRect = NSMakeRect(0, 0, leftWidth, content.size.height);
-+  NSRect rightRect = NSMakeRect(
-+      leftWidth + dividerWidth, 0,
-+      std::max<CGFloat>(0, content.size.width - leftWidth - dividerWidth),
-+      content.size.height);
-+  if (_rightWindow && !_leftWindow) {
-+    rightRect =
-+        NSMakeRect(hostRailWidth, 0,
-+                   std::max<CGFloat>(0, content.size.width - hostRailWidth),
-+                   content.size.height);
++  _leftLaunchButton.hidden = _leftWindow != nil || autoHideRail;
++  _leftLaunchButton.frame =
++      NSMakeRect(edge + _railStyle.horizontalPadding, buttonY, buttonWidth,
++                 _railStyle.buttonHeight);
++  // The overlay holding the launch rail above a lone pane in Zen mode.
++  if (autoHideRail && !bothPanes) {
++    if (!_railOverlay) {
++      _railOverlay = [[NSWindow alloc]
++          initWithContentRect:NSMakeRect(0, 0, 1, 1)
++                    styleMask:NSWindowStyleMaskBorderless
++                      backing:NSBackingStoreBuffered
++                        defer:NO];
++      _railOverlay.releasedWhenClosed = NO;
++      _railOverlay.opaque = NO;
++      _railOverlay.backgroundColor = NSColor.clearColor;
++      _railOverlay.hasShadow = NO;
++      _railOverlay.alphaValue = 0;
++      _railOverlay.ignoresMouseEvents = YES;
++      _railOverlay.excludedFromWindowsMenu = YES;
++      _railOverlay.collectionBehavior =
++          NSWindowCollectionBehaviorTransient |
++          NSWindowCollectionBehaviorIgnoresCycle |
++          NSWindowCollectionBehaviorFullScreenAuxiliary;
++      _railOverlayView =
++          [[HeliumDualRailOverlayView alloc] initWithFrame:NSZeroRect];
++      _railOverlayView.railStyle = _railStyle;
++      _railOverlayView.wantsLayer = YES;
++      _railOverlay.contentView = _railOverlayView;
++      _overlayLaunchButton = [HeliumDualLaunchButton
++          buttonWithTitle:@""
++                   target:self
++                   action:@selector(requestMissingPane:)];
++      _overlayLaunchButton.bezelStyle = NSBezelStyleRegularSquare;
++      _overlayLaunchButton.bordered = NO;
++      _overlayLaunchButton.railStyle = _railStyle;
++      [_railOverlayView addSubview:_overlayLaunchButton];
++    }
++    if (_railOverlay.parentWindow != _window) {
++      [_window addChildWindow:_railOverlay ordered:NSWindowAbove];
++    }
++    const BOOL right = railEdge == HeliumDualPaneSideRight;
++    NSString* label = right ? @"右のブラウザで新しいタブを開く"
++                            : @"左のブラウザで新しいタブを開く";
++    _overlayLaunchButton.toolTip = label;
++    _overlayLaunchButton.accessibilityLabel = label;
++    // Inside the resize band, like the panes, so the edge still resizes.
++    const NSRect overlayRect = NSMakeRect(
++        right ? NSMaxX(area) - _railStyle.width : NSMinX(area), NSMinY(area),
++        _railStyle.width, NSHeight(area));
++    [_railOverlay setFrame:[_window convertRectToScreen:
++                               [_window.contentView convertRect:overlayRect
++                                                         toView:nil]]
++                   display:NO];
++    _overlayLaunchButton.frame =
++        NSMakeRect(_railStyle.horizontalPadding,
++                   buttonY - NSMinY(area), buttonWidth, _railStyle.buttonHeight);
++    // Round the outer corners with the window's. Both corners on one side
++    // are masked, so the layer's y direction does not matter here.
++    CALayer* layer = _railOverlayView.layer;
++    const CGFloat radius = edge > 0 ? [self windowCornerRadius] : 0;
++    const CACornerMask corners =
++        right ? (kCALayerMaxXMinYCorner | kCALayerMaxXMaxYCorner)
++              : (kCALayerMinXMinYCorner | kCALayerMinXMaxYCorner);
++    layer.cornerRadius = radius;
++    layer.maskedCorners = corners;
++    layer.masksToBounds = radius > 0;
++  } else if (_railOverlay) {
++    _railOverlay.alphaValue = 0;
++    _railOverlay.ignoresMouseEvents = YES;
 +  }
 +  NSView* view = _window.contentView;
 +  // Record both targets before resizing either window: the adapter can pump
@@ -7281,6 +7834,7 @@
 +  [_window invalidateCursorRectsForView:_divider];
 +  [self updatePaneCorners];
 +  [self updateWindowControls];
++  [self applyRailVisibilityAnimated:NO];
 +  _layingOut = NO;
 +  if (_layoutPending) [self scheduleRelayout];
 +}
@@ -7307,15 +7861,18 @@
 +  const BOOL fullscreen = (_window.styleMask & NSWindowStyleMaskFullScreen) != 0;
 +  const CGFloat radius = fullscreen ? 0 : [self windowCornerRadius];
 +  const NSRect host = _window.frame;
++  // Panes stop at the resize band; a corner within it still meets the host's
++  // rounded corner. Matching the host radius keeps it inside that curve.
++  const CGFloat reach = [self edgeInset] + 1;
 +  NSWindow* panes[] = {_leftWindow, _rightWindow};
 +  for (size_t side = 0; side < 2; ++side) {
 +    NSWindow* pane = panes[side];
 +    if (!pane) continue;
 +    const NSRect frame = _expectedPaneFrames[side];
-+    const BOOL left = std::abs(NSMinX(frame) - NSMinX(host)) < 1;
-+    const BOOL right = std::abs(NSMaxX(frame) - NSMaxX(host)) < 1;
-+    const BOOL top = std::abs(NSMaxY(frame) - NSMaxY(host)) < 1;
-+    const BOOL bottom = std::abs(NSMinY(frame) - NSMinY(host)) < 1;
++    const BOOL left = std::abs(NSMinX(frame) - NSMinX(host)) < reach;
++    const BOOL right = std::abs(NSMaxX(frame) - NSMaxX(host)) < reach;
++    const BOOL top = std::abs(NSMaxY(frame) - NSMaxY(host)) < reach;
++    const BOOL bottom = std::abs(NSMinY(frame) - NSMinY(host)) < reach;
 +    NSView* view = pane.contentView;
 +    view.wantsLayer = YES;
 +    CALayer* layer = view.layer;
@@ -7408,6 +7965,28 @@
 +        ? NSMakeRect(NSMinX(inPane), offset.y, NSWidth(inPane), NSHeight(inPane))
 +        : inPane;
 +  }
++  [self applyWindowControlsAlpha];
++}
++
++- (void)applyWindowControlsAlpha {
++  const size_t side = _windowControlsPane == _rightWindow ? 1 : 0;
++  const CGFloat alpha = _windowControlsAlpha[side];
++  for (NSButton* button in _paneWindowButtons) {
++    if (button.alphaValue != alpha) button.alphaValue = alpha;
++    // Invisible controls must not take clicks meant for the page below.
++    const BOOL hidden = alpha < 0.01;
++    if (button.hidden != hidden) button.hidden = hidden;
++  }
++}
++
++- (void)setWindowControlsAlpha:(CGFloat)alpha forPane:(NSWindow*)pane {
++  if (!pane || (pane != _leftWindow && pane != _rightWindow) ||
++      !std::isfinite(alpha)) {
++    return;
++  }
++  _windowControlsAlpha[pane == _rightWindow ? 1 : 0] =
++      std::clamp<CGFloat>(alpha, 0, 1);
++  if (pane == _windowControlsPane) [self applyWindowControlsAlpha];
 +}
 +
 +- (void)moveDividerToScreenX:(CGFloat)x {
@@ -7415,9 +7994,12 @@
 +      [_window convertRectToScreen:[_window.contentView
 +                                       convertRect:_window.contentView.bounds
 +                                            toView:nil]];
-+  CGFloat available = screen.size.width - kDividerWidth;
++  // Same geometry as -relayout: panes start after the resize band.
++  const CGFloat edge = [self edgeInset];
++  CGFloat available = screen.size.width - 2 * edge - kDividerWidth;
 +  if (available > 0) {
-+    self.splitRatio = (x - screen.origin.x - kDividerWidth / 2) / available;
++    self.splitRatio =
++        (x - screen.origin.x - edge - kDividerWidth / 2) / available;
 +  }
 +}
 +
@@ -7441,6 +8023,254 @@
 +    [self.delegate heliumDualWindowHost:self
 +                         didRequestPane:HeliumDualPaneSideLeft];
 +  }
++}
++
++- (void)requestMissingPane:(id)sender {
++  if (!_rightWindow) {
++    [self requestRightPane:sender];
++  } else if (!_leftWindow) {
++    [self requestLeftPane:sender];
++  }
++}
++
++#pragma mark - Zen mode rails
++
++- (BOOL)autoHideRails {
++  return _autoHideRails;
++}
++
++- (void)setAutoHideRails:(BOOL)autoHide {
++  if (_autoHideRails == autoHide) return;
++  _autoHideRails = autoHide;
++  [self updatePointerMonitor];
++  [self relayout];
++}
++
++// The window edge whose rail hides in Zen mode: a collapsed pane's side, or
++// the empty side next to a lone pane.
++- (BOOL)hideableRailEdge:(HeliumDualPaneSide*)edge {
++  if (!_autoHideRails || _closing) return NO;
++  if (_leftWindow && _rightWindow) {
++    if (_paneHidden[0] == _paneHidden[1]) return NO;
++    *edge = _paneHidden[0] ? HeliumDualPaneSideLeft : HeliumDualPaneSideRight;
++    return YES;
++  }
++  if (!_leftWindow && !_rightWindow) return NO;
++  *edge = _leftWindow ? HeliumDualPaneSideRight : HeliumDualPaneSideLeft;
++  return YES;
++}
++
++- (NSWindow*)railRevealWindow {
++  HeliumDualPaneSide edge = HeliumDualPaneSideRight;
++  if (![self hideableRailEdge:&edge]) return nil;
++  if (_leftWindow && _rightWindow) return [self browserWindowForSide:edge];
++  return _railOverlay;
++}
++
++- (void)updatePointerMonitor {
++  const BOOL wanted = _autoHideRails && !_closing;
++  if (wanted && !_pointerMonitor) {
++    __weak HeliumDualWindowHost* weakSelf = self;
++    _pointerMonitor = [NSEvent
++        addLocalMonitorForEventsMatchingMask:NSEventMaskMouseMoved |
++                                             NSEventMaskLeftMouseDragged
++                                     handler:^NSEvent*(NSEvent* event) {
++      if (RailTraceEnabled()) {
++        NSLog(@"DualRail event type=%lu window=%@", (unsigned long)event.type,
++              event.window.title);
++      }
++      [weakSelf pointerMoved];
++      return event;
++    }];
++  } else if (!wanted && _pointerMonitor) {
++    [NSEvent removeMonitor:_pointerMonitor];
++    _pointerMonitor = nil;
++    [self cancelRailHide];
++    [self setPointerPolling:NO];
++  }
++}
++
++// The visible pane nearest |edge|, not counting a hidden Zen rail.
++- (nullable NSWindow*)paneAtEdge:(HeliumDualPaneSide)edge
++                            side:(HeliumDualPaneSide*)side {
++  NSWindow* rail = [self railRevealWindow];
++  NSWindow* panes[] = {_leftWindow, _rightWindow};
++  NSWindow* best = nil;
++  CGFloat bestDistance = 0;
++  for (size_t index = 0; index < 2; ++index) {
++    if (!panes[index] || panes[index] == rail) continue;
++    const NSRect frame = _expectedPaneFrames[index];
++    const CGFloat distance = edge == HeliumDualPaneSideLeft
++                                 ? NSMinX(frame) - NSMinX(_window.frame)
++                                 : NSMaxX(_window.frame) - NSMaxX(frame);
++    if (!best || distance < bestDistance) {
++      best = panes[index];
++      bestDistance = distance;
++      *side = index ? HeliumDualPaneSideRight : HeliumDualPaneSideLeft;
++    }
++  }
++  return best;
++}
++
++- (void)pointerMoved {
++  if (!_autoHideRails || _closing || !_window.visible ||
++      _window.miniaturized) {
++    [self setPointerPolling:NO];
++    return;
++  }
++  [self evaluatePointer:NSEvent.mouseLocation];
++  // Movement over other apps is not reported; poll while a rail is shown.
++  [self setPointerPolling:_railRevealed];
++}
++
++- (void)setPointerPolling:(BOOL)polling {
++  if (polling == (_railPollTimer != nil)) return;
++  if (!polling) {
++    [_railPollTimer invalidate];
++    _railPollTimer = nil;
++    return;
++  }
++  __weak HeliumDualWindowHost* weakSelf = self;
++  _railPollTimer = [NSTimer scheduledTimerWithTimeInterval:kRailPollInterval
++                                                   repeats:YES
++                                                     block:^(NSTimer* timer) {
++    [weakSelf pointerMoved];
++  }];
++  _railPollTimer.tolerance = kRailPollInterval / 2;
++}
++
++- (void)evaluatePointer:(NSPoint)point {
++  const NSRect host = _window.frame;
++  const BOOL inside = NSPointInRect(point, NSInsetRect(host, -1, -1));
++  HeliumDualPaneSide edge = HeliumDualPaneSideRight;
++  const BOOL hasRail = [self hideableRailEdge:&edge];
++  // The resize band beyond a pane stands in for that pane's own Zen trigger,
++  // which no longer reaches the window edge (or, for a strip facing the
++  // scroll bar side, is kept to the pane's last point).
++  const CGFloat band = [self edgeInset];
++  if (inside && band > 0 && !(NSEvent.pressedMouseButtons & 1)) {
++    const BOOL leftBand = point.x - NSMinX(host) < band;
++    const BOOL rightBand = NSMaxX(host) - point.x < band;
++    const HeliumDualPaneSide bandEdge =
++        leftBand ? HeliumDualPaneSideLeft : HeliumDualPaneSideRight;
++    HeliumDualPaneSide paneSide = HeliumDualPaneSideLeft;
++    if ((leftBand || rightBand) && !(hasRail && edge == bandEdge) &&
++        [self paneAtEdge:bandEdge side:&paneSide] &&
++        [self.delegate respondsToSelector:@selector(heliumDualWindowHost:
++                                                    pointerReachedEdge:
++                                                                ofPane:)]) {
++      [self.delegate heliumDualWindowHost:self
++                       pointerReachedEdge:bandEdge
++                                   ofPane:paneSide];
++    }
++  }
++  if (!hasRail) return;
++  if (!inside) {
++    // Brief excursions outside the window keep the rail, as in Helium.
++    if (_railRevealed) [self scheduleRailHide:kRailCursorExitGrace];
++    return;
++  }
++  const BOOL right = edge == HeliumDualPaneSideRight;
++  const CGFloat fromEdge =
++      right ? NSMaxX(host) - point.x : point.x - NSMinX(host);
++  NSWindow* rail = [self railRevealWindow];
++  const CGFloat railReach =
++      !rail ? 0
++            : (right ? NSMaxX(host) - NSMinX(rail.frame)
++                     : NSMaxX(rail.frame) - NSMinX(host));
++  const CGFloat edgeInset = [self edgeInset];
++  // A drag (a scroll bar, a text selection) passing the edge reveals nothing.
++  const BOOL inTrigger =
++      !(NSEvent.pressedMouseButtons & 1) &&
++      fromEdge < (edgeInset > 0 ? edgeInset : kRailRevealFullscreenTrigger);
++  const BOOL overRail =
++      _railRevealed && fromEdge < railReach + kRailRevealLeeway;
++  if (RailTraceEnabled()) {
++    NSLog(@"DualRail pointer fromEdge=%.1f trigger=%d over=%d revealed=%d "
++          @"pressed=%lu active=%d key=%@",
++          fromEdge, inTrigger, overRail, _railRevealed,
++          (unsigned long)NSEvent.pressedMouseButtons, NSApp.active,
++          NSApp.keyWindow.title);
++  }
++  if (inTrigger || overRail) {
++    [self cancelRailHide];
++    [self setRailRevealed:YES];
++  } else if (_railRevealed) {
++    [self scheduleRailHide:kRailHoverExitGrace];
++  }
++}
++
++- (void)scheduleRailHide:(NSTimeInterval)delay {
++  if (_railHideTimer) {
++    // Keep an earlier deadline; only bring a later one forward.
++    if (_railHideTimer.fireDate.timeIntervalSinceNow <= delay) return;
++    [_railHideTimer invalidate];
++  }
++  __weak HeliumDualWindowHost* weakSelf = self;
++  _railHideTimer = [NSTimer
++      scheduledTimerWithTimeInterval:delay
++                             repeats:NO
++                               block:^(NSTimer* timer) {
++    HeliumDualWindowHost* host = weakSelf;
++    if (!host) return;
++    host->_railHideTimer = nil;
++    // Never fade a rail under a press, e.g. while one of its tabs is dragged.
++    if (NSEvent.pressedMouseButtons & 1) {
++      [host scheduleRailHide:kRailHoverExitGrace];
++      return;
++    }
++    [host setRailRevealed:NO];
++  }];
++}
++
++- (void)cancelRailHide {
++  [_railHideTimer invalidate];
++  _railHideTimer = nil;
++}
++
++- (void)setRailRevealed:(BOOL)revealed {
++  if (_railRevealed == revealed) return;
++  if (RailTraceEnabled()) NSLog(@"DualRail revealed=%d", revealed);
++  _railRevealed = revealed;
++  if (revealed) {
++    // Keep reading the pointer while shown (see -pointerMoved).
++    [self setPointerPolling:YES];
++  } else {
++    [self cancelRailHide];
++  }
++  [self applyRailVisibilityAnimated:YES];
++}
++
++- (void)applyRailVisibilityAnimated:(BOOL)animated {
++  NSWindow* rail = [self railRevealWindow];
++  // Everything except a hidden Zen rail is fully shown and interactive.
++  NSWindow* panes[] = {_leftWindow, _rightWindow};
++  for (NSWindow* pane : panes) {
++    if (!pane || pane == rail) continue;
++    if (pane.alphaValue != 1) pane.alphaValue = 1;
++    SetPaneInteractive(pane, YES);
++  }
++  if (_railOverlay && _railOverlay != rail) {
++    _railOverlay.alphaValue = 0;
++    SetPaneInteractive(_railOverlay, NO);
++  }
++  if (!rail) return;
++  const BOOL show = _railRevealed;
++  SetPaneInteractive(rail, show);
++  if (show && _window.visible && !_window.miniaturized) {
++    // Above the pane it overlaps, which may have been ordered front since.
++    NSWindow* below = rail == _leftWindow    ? _rightWindow
++                      : rail == _rightWindow ? _leftWindow
++                                             : (_leftWindow ?: _rightWindow);
++    if (below) [rail orderWindow:NSWindowAbove relativeTo:below.windowNumber];
++  }
++  const CGFloat alpha = show ? 1 : 0;
++  if (rail.alphaValue == alpha && !animated) return;
++  // Also supersedes a fade still in flight.
++  [NSAnimationContext runAnimationGroup:^(NSAnimationContext* context) {
++    context.duration = animated ? kRailRevealDuration : 0;
++    rail.animator.alphaValue = alpha;
++  }];
 +}
 +
 +- (void)toggleFullscreen {
@@ -7478,6 +8308,11 @@
 +  NSAssert(!_leftWindow && !_rightWindow,
 +           @"Detach both browsers after normal shutdown before closing host");
 +  _closing = YES;
++  [self updatePointerMonitor];
++  if (_railOverlay) {
++    [_window removeChildWindow:_railOverlay];
++    [_railOverlay orderOut:nil];
++  }
 +  [_window close];
 +}
 +
@@ -7593,6 +8428,48 @@
 +  [self completeFullscreenTransition:YES];
 +}
 +@end
+--- /dev/null
++++ b/components/helium_onboarding/src/components/DualLogo.svelte
+@@ -0,0 +1,39 @@
++<!--
++  Copyright 2026 Dual contributors. Dual is an unofficial derivative of Helium.
++  You can use, redistribute, and/or modify this source code under
++  the terms of the GPL-3.0 license that can be found in the LICENSE file.
++
++  Dual's mark, used where onboarding shows the browser's own logo. Sized and
++  laid out like helium-prism's HeliumLogo.
++-->
++<script lang="ts">
++    type Props = {
++        height?: string;
++    };
++
++    let { height = "28px" }: Props = $props();
++</script>
++
++<span class="dual-logo" style:height aria-hidden="true">
++    <!-- The app icon's light tile keeps the navy row visible on dark pages. -->
++    <svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
++        <rect width="256" height="256" rx="58" fill="#DDDDDD" />
++        <rect x="36" y="158.67" width="184" height="61.33" fill="#362979" />
++        <rect x="97.33" y="97.33" width="122.67" height="61.33" fill="#227AF4" />
++        <rect x="158.67" y="36" width="61.33" height="61.33" fill="#84D6FE" />
++    </svg>
++</span>
++
++<style>
++    .dual-logo {
++        display: inline-flex;
++        flex: 0 0 auto;
++        width: auto;
++    }
++
++    .dual-logo svg {
++        display: block;
++        width: auto;
++        height: 100%;
++    }
++</style>
 --- /dev/null
 +++ b/content/browser/renderer_host/native_resize_sync_mac.cc
 @@ -0,0 +1,67 @@

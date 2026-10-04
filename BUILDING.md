@@ -1,7 +1,7 @@
-# ビルド手順（Dual 6.2.2）
+# ビルド手順（Dual 6.2.3）
 
-Dual 6.2.2 は、Helium 0.17.2.2 を Helium 自身のリリース手順で準備したソースに、
-`helium-dual-window.patch` を当ててビルドしています。
+Dual 6.2.3 は、Helium 0.17.2.2 を Helium 自身のリリース手順で準備したソースに、
+`helium-dual-window.patch` を当て、`dual_rebrand.py` でアプリ内の名称とロゴを Dual のものにしてからビルドしています。
 
 ## 固定した入力
 
@@ -46,6 +46,17 @@ patch -p1 --forward -d build/src < /path/to/Dual/helium-dual-window.patch
 
 パッチは上の準備を終えたソースに対して作っており、失敗なく適用できることを確認しています。
 
+続けて、アプリ内の Helium の名称とロゴを Dual のものに置き換えます（Python 3 のみで動き、追加のライブラリは不要です）。
+
+```sh
+python3 /path/to/Dual/dual_rebrand.py build/src --branding /path/to/Dual/branding
+```
+
+画面の文字列（`.grd`・`.grdp` と翻訳の `.xtb`）で、ブラウザ自身を指す「Helium」を「Dual」にし、
+`branding/` のロゴを Helium の準備手順がロゴを置く場所へコピーします。
+Helium のオンラインサービス、Helium のパートナープログラム、著作権表示など、Helium 自身を指す表記は変えません。
+`branding/` の画像は `branding/make_branding.py`（Pillow が必要）で、Dual のアイコン画像から作り直せます。
+
 ## 3. 構成・ビルド
 
 ```sh
@@ -61,9 +72,9 @@ helium_build
 ```sh
 python3 /path/to/Dual/packaging/package_release.py \
   --built "build/src/out/Default/Helium Dual.app" \
-  --icon /path/to/Dual/Dual-6.icns --version 6.2.2 --out /path/to/release
+  --icon /path/to/Dual/Dual-6.icns --version 6.2.3 --out /path/to/release
 ```
 
-アプリ名を `Dual 6.2.2`、バンドル ID を Dual 5 と同じ `local.heliumdual.browser` にして
+アプリ名を `Dual 6.2.3`、バンドル ID を Dual 5 と同じ `local.heliumdual.browser` にして
 （既存のプロファイルを引き継ぐため）、アイコンを差し替え、アドホック署名して DMG を作ります。
 Apple Developer ID での署名・公証はしていません。

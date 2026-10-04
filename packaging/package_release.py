@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-# Dual: unofficial modifications of Helium, 2026-09-08 to 2026-09-25 (Dual 6.2.2).
+# Dual: unofficial modifications of Helium, 2026-09-08 to 2026-10-04 (Dual 6.2.3).
 # Modifications Copyright 2026 Dual contributors; GPL-3.0-only.
 """Package a built Dual app as the public release DMG.
 
   python3 packaging/package_release.py \
       --built "/path/to/src/out/Default/Helium Dual.app" \
-      --icon Dual-6.icns --version 6.2.2 --out /path/to/release
+      --icon Dual-6.icns --version 6.2.3 --out /path/to/release
 
 Copies the built app, sets the public name and bundle identifier (kept equal to
 Dual 5 so an existing profile carries over), applies the icon, ad-hoc signs it
