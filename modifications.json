@@ -24,6 +24,12 @@
   "published_sha256": "e50622464dde87030d168e2880bf3d9a00bfd1441d3c9e55fb8e399f2411c940"
  },
  {
+  "path": "chrome/browser/crash_upload_list/helium_crash_reporting.cc",
+  "new_file": false,
+  "helium_0.17.2.2_sha256": "38c90871770c86116ed74f534b4c4e0347ff27ddb97374e0f2b8fc7c5c08dbbe",
+  "published_sha256": "1033da69efc6bb5d9cba1c370a64c13b555362079ee4a226514e3fae0b9b3b89"
+ },
+ {
   "path": "chrome/browser/resources/settings/appearance_page/appearance_browser_proxy.ts",
   "new_file": false,
   "helium_0.17.2.2_sha256": "8baab32fb4c8f9cebcdf58f54025ef55f0171b475542b06ff1806b722baf8173",
@@ -136,7 +142,7 @@
  {
   "path": "chrome/browser/ui/helium/helium_dual_browser_mac.mm",
   "new_file": true,
-  "published_sha256": "2d36583e5d51833dae765de237a6948b817e24890ac7cde19bc0c72399ba3f46"
+  "published_sha256": "ec9efbc7cbe85662fad634b8183ad5c93766d0d3294d3a0d0ca47bb15a3c9997"
  },
  {
   "path": "chrome/browser/ui/helium/helium_dual_state.h",
@@ -151,12 +157,12 @@
  {
   "path": "chrome/browser/ui/helium/helium_dual_window_host_mac.h",
   "new_file": true,
-  "published_sha256": "94d29d5c177bd98d288d95a83fdf2a56b45ff87216cce65af84d782860df26ec"
+  "published_sha256": "c9ad687ea0adf898b012177ce24640ccf5287284f335acd2921cf31a64f7270b"
  },
  {
   "path": "chrome/browser/ui/helium/helium_dual_window_host_mac.mm",
   "new_file": true,
-  "published_sha256": "8dc98af057f0d6ab65ad26da90a7bd089d0c28fd2be090823bc425101c3f640e"
+  "published_sha256": "b87dc93c9f17a86e61bea993f987ac12e01e678378a03375118b32abc1170f67"
  },
  {
   "path": "chrome/browser/ui/helium/helium_layout_state_controller.cc",
@@ -234,7 +240,7 @@
   "path": "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.cc",
   "new_file": false,
   "helium_0.17.2.2_sha256": "08ff9377a94d2f05ce2af9bef6908c404db0cdba94a156535408f6d27200eba3",
-  "published_sha256": "e21ad2b4482997668e7f1316a035972ce467631dff737be2ad2c8e3a29c15157"
+  "published_sha256": "b102d6359a4b45ac07549fcdbf06f92dc06c5c8469e5378804bdb8c259dcaf6f"
  },
  {
   "path": "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h",
@@ -252,13 +258,13 @@
   "path": "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.cc",
   "new_file": false,
   "helium_0.17.2.2_sha256": "db0f1d94dfa2cb4db9f58165bd213b73a8770371043cb75b3f20cc3b5a8c9adc",
-  "published_sha256": "fdf085d3a4981cb6f33cdea9d0148ba851d3cf9100c75bdaa7b5e9f1a4e64a46"
+  "published_sha256": "2f6ad1b556c9c86c47284ede460a2d0ded4b4fdcfc5907fc5ae499bdf3ba9fad"
  },
  {
   "path": "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h",
   "new_file": false,
   "helium_0.17.2.2_sha256": "6187e6bf08027d331c151e75510cd7bc594a251a64bc252c7368161f71748e4f",
-  "published_sha256": "4ac36f1c17922ce84113611a1ab6a065ec625ff700dee85a8c340ff41ad0f000"
+  "published_sha256": "3bb292a4b8d950ac377e14e266f73ecc03c572398efba38b604d8ee9652b92b5"
  },
  {
   "path": "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.cc",
@@ -349,6 +355,12 @@
   "new_file": false,
   "helium_0.17.2.2_sha256": "3017199b6a0680fc1fdf7ebd0643a22362c190fb84a40edfe7b68085dd5cec00",
   "published_sha256": "ca5d731f0a1fc1a8e64b12290d4931a0f67399b6fc04e921dcb89ea5638dc13d"
+ },
+ {
+  "path": "components/crash/core/app/crash_reporter_client.cc",
+  "new_file": false,
+  "helium_0.17.2.2_sha256": "06ade4c8c4443d66f127ddfb94b7549f90ddc1422f28a970504519ef88ace2b1",
+  "published_sha256": "e8a37e9cc4d140de52df006040a8a2b05e2c883bfc41dc9d1111baa79fae323e"
  },
  {
   "path": "components/helium_onboarding/BUILD.gn",
@@ -444,6 +456,12 @@
   "new_file": false,
   "helium_0.17.2.2_sha256": "08685a0f196409ddc5b78d4750c799b2637ab764e40f7f3988c679c355e08f92",
   "published_sha256": "e0e5f4e6ea47596c20db7ba8ef1a60b7c5f89a3ae690c619afe9334e83a44d7c"
+ },
+ {
+  "path": "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.mm",
+  "new_file": false,
+  "helium_0.17.2.2_sha256": "2b75e354c3e0c80544a5f7f2225fba905452df820e755f61ba38fbf633eaeda8",
+  "published_sha256": "859849176e1c027a607d3dd1d851a8b6669f3a67e37234ca6275eda1fc0bd72e"
  },
  {
   "path": "content/browser/BUILD.gn",

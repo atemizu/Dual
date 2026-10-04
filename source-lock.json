@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "release": "Dual 6.2.3",
+  "release": "Dual 6.2.4",
   "helium_macos": {
     "url": "https://github.com/imputnet/helium-macos.git",
     "tag": "0.17.2.2",
@@ -19,8 +19,8 @@
   },
   "local_patch": {
     "path": "helium-dual-window.patch",
-    "sha256": "cb19cf142cea38d634d1b2be4bc82cc4a96c14b688890b089d83fbad7efcc3c0",
-    "files": 92,
+    "sha256": "3e2d68460fddd150f2f8630f36bcb9082db5f5f428db874421040782a9627c83",
+    "files": 95,
     "applies_to": "Helium 0.17.2.2 source after Helium's own prepare steps (patches, domain and name substitution, translations)"
   },
   "build": {

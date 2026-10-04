@@ -153,6 +153,35 @@
  
  #if BUILDFLAG(IS_ANDROID)
  #if BUILDFLAG(IS_DESKTOP_ANDROID)
+--- a/chrome/browser/crash_upload_list/helium_crash_reporting.cc
++++ b/chrome/browser/crash_upload_list/helium_crash_reporting.cc
+@@ -1,3 +1,6 @@
++// Modified by Dual contributors on 2026-10-05: Dual never uploads crash reports.
++// These modifications are licensed under GPL-3.0; original notices are retained.
++
+ // Copyright 2026 The Helium Authors
+ // You can use, redistribute, and/or modify this source code under
+ // the terms of the GPL-3.0 license that can be found in the LICENSE file.
+@@ -56,15 +59,10 @@
+ }
+ 
+ bool UploadsDisabledByPolicy() {
+-  PrefService* local_state = g_browser_process->local_state();
+-  if (!local_state) {
+-    return false;
+-  }
+-
+-  const PrefService::Preference* preference =
+-      local_state->FindPreference(metrics::prefs::kMetricsReportingEnabled);
+-  return preference && preference->IsManaged() &&
+-         !local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
++  // Dual is an unofficial derivative: its crashes must not reach Helium's
++  // crash service. Treat uploads as forbidden, exactly as when policy forbids
++  // them: no prompt after a crash, no upload, and the setting shown disabled.
++  return true;
+ }
+ 
+ void InitializeCrashReportingMode() {
 --- a/chrome/browser/resources/settings/appearance_page/appearance_browser_proxy.ts
 +++ b/chrome/browser/resources/settings/appearance_page/appearance_browser_proxy.ts
 @@ -1,3 +1,6 @@
@@ -2222,14 +2251,15 @@
    std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
 --- a/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.cc
 +++ b/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.cc
-@@ -1,3 +1,6 @@
+@@ -1,3 +1,7 @@
 +// Modified by Dual contributors on 2026-09-12: pane resizing and non-destructive hiding.
++// Modified by Dual contributors on 2026-10-04: collapsed panes float in Zen mode.
 +// These modifications are licensed under GPL-3.0; original notices are retained.
 +
  // Copyright 2025 The Chromium Authors
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
-@@ -18,6 +21,9 @@
+@@ -18,6 +22,9 @@
  
  #if BUILDFLAG(IS_MAC)
  #include "chrome/browser/ui/views/frame/glass_frame_service.h"
@@ -2239,7 +2269,7 @@
  #endif
  
  // Proposed layout implementation.
-@@ -221,6 +227,25 @@
+@@ -221,6 +228,31 @@
    }
    base::AutoReset<bool> guard_reset(&reentrancy_guard_, true);
  
@@ -2253,9 +2283,15 @@
 +      SetViewVisibility(child, child == rail);
 +    }
 +    if (rail) {
-+      // The toolbar is hidden with the pane. Keep the rail where it was below
-+      // the toolbar so its buttons do not jump when the pane collapses.
-+      const int top = std::clamp(dual_rail_top_, 0, host->height());
++      // In Zen mode the host floats the collapsed pane like Helium's side
++      // chrome; its strip fills it in the floating style.
++      const bool floating = delegate().IsZenModeEnabledForLayout() &&
++                            !delegate().IsZenModeSideChromePinned();
++      rail->SetZenModeFloatingStyleForLayout(floating);
++      // Otherwise the toolbar is hidden with the pane. Keep the rail where it
++      // was below the toolbar so its buttons do not jump when it collapses.
++      const int top =
++          floating ? 0 : std::clamp(dual_rail_top_, 0, host->height());
 +      rail->SetBoundsRect(
 +          gfx::Rect(0, top, host->width(), host->height() - top));
 +    }
@@ -2265,7 +2301,7 @@
    auto params = delegate().GetBrowserLayoutParams(/*use_browser_bounds=*/true);
    if (params.IsEmpty()) {
      return;
-@@ -316,6 +341,13 @@
+@@ -316,6 +348,13 @@
    UpdateBubbles();
  
    DoPostLayoutCleanup();
@@ -2328,15 +2364,16 @@
        !is_in_split && ShouldUseRoundedFrame();
 --- a/chrome/browser/ui/views/frame/vertical_tab_strip_region_view.cc
 +++ b/chrome/browser/ui/views/frame/vertical_tab_strip_region_view.cc
-@@ -1,3 +1,7 @@
+@@ -1,3 +1,8 @@
 +// Modified by Dual contributors on 2026-09-13: persistent close glyph for pane hiding.
 +// Modified by Dual contributors on 2026-10-03: the glyph sits toward the outer edge.
++// Modified by Dual contributors on 2026-10-04: first-row offset for the Zen launch panel.
 +// These modifications are licensed under GPL-3.0; original notices are retained.
 +
  // Copyright 2025 The Chromium Authors
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
-@@ -39,6 +43,13 @@
+@@ -39,6 +44,13 @@
  #include "chrome/browser/ui/views/frame/shadow_frame_view.h"
  #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
  #include "chrome/browser/ui/views/helium/frame_corner_radius.h"
@@ -2350,10 +2387,11 @@
  #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
  #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
  #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
-@@ -123,6 +134,37 @@
+@@ -122,6 +134,37 @@
+           views::FlexSpecification(views::LayoutOrientation::kVertical,
                                     views::MinimumFlexSizeRule::kPreferred,
                                     views::MaximumFlexSizeRule::kPreferred));
- 
++
 +#if BUILDFLAG(IS_MAC)
 +  if (helium_dual::IsPane(browser_view->browser()->helium_dual_role())) {
 +    auto button = std::make_unique<TabStripFlatEdgeButton>();
@@ -2384,11 +2422,10 @@
 +    AddPreTargetHandler(&click_handler_);
 +  }
 +#endif
-+
+ 
    bottom_button_container_ =
        AddChildView(std::make_unique<VerticalTabStripBottomContainer>(
-           state_controller_, root_action_item, browser_view->browser(),
-@@ -180,6 +222,7 @@
+@@ -180,6 +223,7 @@
  }
  
  VerticalTabStripRegionView::~VerticalTabStripRegionView() {
@@ -2396,7 +2433,26 @@
    for (const auto& lock : hover_locks_) {
      lock->ClearRegionViewOnDestruction();
    }
-@@ -356,8 +399,14 @@
+@@ -295,6 +339,18 @@
+   UpdateInteriorMargin();
+ }
+ 
++int VerticalTabStripRegionView::GetDualFirstRowTop() const {
++  const int top = flex_layout_ ? flex_layout_->interior_margin().top() : 0;
++  const views::View* strip = tab_strip_view();
++  const views::View* row = GetTabViewAt(0);
++  if (!strip || !row || !row->GetVisible()) {
++    return top;
++  }
++  // Measured within the tab list, so a hide button row above it is skipped.
++  return top +
++         views::View::ConvertRectToTarget(row, strip, row->GetLocalBounds()).y();
++}
++
+ void VerticalTabStripRegionView::SetZenModeFloatingStyleForLayout(
+     bool floating) {
+   if (zen_mode_floating_style_ == floating) {
+@@ -356,8 +412,14 @@
  }
  
  void VerticalTabStripRegionView::Layout(PassKey) {
@@ -2412,12 +2468,12 @@
    // Manually position the resize area as it overlaps views handled by the flex
    // layout.
    const int resize_area_x = state_controller_->IsTabStripRightAligned()
-@@ -705,7 +754,17 @@
+@@ -705,6 +767,16 @@
  
  void VerticalTabStripRegionView::ClickEventHandler::OnMouseEvent(
      ui::MouseEvent* event) {
 +#if BUILDFLAG(IS_MAC)
-   if (event->type() == ui::EventType::kMousePressed &&
++  if (event->type() == ui::EventType::kMousePressed &&
 +      helium_dual::IsPaneHidden(region_view_->browser_view()) &&
 +      event->target() &&
 +      !region_view_->dual_hide_button_->Contains(
@@ -2426,11 +2482,10 @@
 +    helium_dual::SetPaneHidden(region_view_->browser_view(), false);
 +  }
 +#endif
-+  if (event->type() == ui::EventType::kMousePressed &&
+   if (event->type() == ui::EventType::kMousePressed &&
        region_view_->state_controller_->IsExpandOnHoverEnabled() &&
        !region_view_->is_expanded_on_hover()) {
-     region_view_->RestartExpandOnHoverTimer(
-@@ -932,7 +991,7 @@
+@@ -932,7 +1004,7 @@
          base::BindOnce(&VerticalTabStripRegionView::AnimateExpandOnHover,
                         base::Unretained(this),
                         /*expand=*/true));
@@ -2439,7 +2494,7 @@
        AddPreTargetHandler(&click_handler_);
      }
    }
-@@ -1024,7 +1083,7 @@
+@@ -1024,7 +1096,7 @@
    if (expand_on_hover_timer_.IsRunning()) {
      expand_on_hover_timer_.Stop();
  
@@ -2450,14 +2505,15 @@
    }
 --- a/chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h
 +++ b/chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h
-@@ -1,3 +1,6 @@
+@@ -1,3 +1,7 @@
 +// Modified by Dual contributors on 2026-09-12: pane resizing and non-destructive hiding.
++// Modified by Dual contributors on 2026-10-04: first-row offset for the Zen launch panel.
 +// These modifications are licensed under GPL-3.0; original notices are retained.
 +
  // Copyright 2025 The Chromium Authors
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
-@@ -41,6 +44,7 @@
+@@ -41,6 +45,7 @@
  }  // namespace tabs
  
  namespace views {
@@ -2465,7 +2521,18 @@
  class ResizeArea;
  class Separator;
  class View;
-@@ -236,6 +240,7 @@
+@@ -88,6 +93,10 @@
+   void SetHasLeadingExclusionForLayout(bool has_leading_exclusion);
+   void SetZenModeFloatingStyleForLayout(bool floating);
+ 
++  // Dual: where the first tab row starts below this region's top padding,
++  // not counting a hide button row above the tabs.
++  int GetDualFirstRowTop() const;
++
+   void UpdateInteriorMargin();
+ 
+   // views::View:
+@@ -236,6 +245,7 @@
    bool zen_mode_floating_style_ = false;
  
    raw_ptr<VerticalTabStripBottomContainer> bottom_button_container_ = nullptr;
@@ -3049,6 +3116,29 @@
  
    LoadMetadata();
  }
+--- a/components/crash/core/app/crash_reporter_client.cc
++++ b/components/crash/core/app/crash_reporter_client.cc
+@@ -1,3 +1,6 @@
++// Modified by Dual contributors on 2026-10-05: no crash upload URL in Dual.
++// These modifications are licensed under GPL-3.0; original notices are retained.
++
+ // Copyright 2013 The Chromium Authors
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+@@ -158,11 +161,9 @@
+   }
+ #endif
+ 
+-#if defined(OFFICIAL_BUILD)
+-  return "https://crash.helium.computer/crash";
+-#else
++  // Dual: no upload URL, so the crash handler has nowhere to send a report
++  // (Helium's official builds use https://crash.helium.computer/crash).
+   return std::string();
+-#endif
+ }
+ 
+ bool CrashReporterClient::ShouldMonitorCrashHandlerExpensively() {
 --- a/components/helium_onboarding/BUILD.gn
 +++ b/components/helium_onboarding/BUILD.gn
 @@ -1,3 +1,6 @@
@@ -3503,6 +3593,51 @@
        FROM_HERE,
        BindOnce(&WebDatabaseBackend::ShutdownDatabase, web_db_backend_));
  }
+--- a/content/app_shim_remote_cocoa/render_widget_host_view_cocoa.mm
++++ b/content/app_shim_remote_cocoa/render_widget_host_view_cocoa.mm
+@@ -1,3 +1,6 @@
++// Modified by Dual contributors on 2026-10-04: repair the system cursor only in fullscreen.
++// These modifications are licensed under GPL-3.0; original notices are retained.
++
+ // Copyright 2018 The Chromium Authors
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+@@ -1055,6 +1058,16 @@
+   return !hitSelf && !_hasOpenMouseDown;
+ }
+ 
++// Dual: whether this view's window, or the window hosting it, is fullscreen.
++- (BOOL)isInFullscreenWindow {
++  for (NSWindow* window = self.window; window; window = window.parentWindow) {
++    if (window.styleMask & NSWindowStyleMaskFullScreen) {
++      return YES;
++    }
++  }
++  return NO;
++}
++
+ - (void)mouseEvent:(NSEvent*)theEvent {
+   TRACE_EVENT0("browser", "RenderWidgetHostViewCocoa::mouseEvent");
+ 
+@@ -1135,9 +1148,15 @@
+   // This is safe for overlapping UI (like popups or context menus), which will
+   // intercept the mouse event before it reaches here, meaning we won't
+   // improperly override their cursors.
+-  if (type == NSEventTypeMouseMoved || type == NSEventTypeLeftMouseDragged ||
+-      type == NSEventTypeRightMouseDragged ||
+-      type == NSEventTypeOtherMouseDragged) {
++  //
++  // Dual: +currentSystemCursor returns a new object on every call, so the
++  // identity check below never matches and every mouse move re-registered the
++  // cursor, about a millisecond of this thread each time on recent macOS.
++  // The reset it repairs only happens in fullscreen, so check only there.
++  if ((type == NSEventTypeMouseMoved || type == NSEventTypeLeftMouseDragged ||
++       type == NSEventTypeRightMouseDragged ||
++       type == NSEventTypeOtherMouseDragged) &&
++      [self isInFullscreenWindow]) {
+     if ([self shouldChangeCurrentCursor] &&
+         [NSCursor currentSystemCursor] != _currentCursor) {
+       [_currentCursor set];
 --- a/content/browser/BUILD.gn
 +++ b/content/browser/BUILD.gn
 @@ -1,3 +1,6 @@
@@ -4558,7 +4693,7 @@
 +#endif  // CHROME_BROWSER_UI_HELIUM_HELIUM_DUAL_BROWSER_MAC_H_
 --- /dev/null
 +++ b/chrome/browser/ui/helium/helium_dual_browser_mac.mm
-@@ -0,0 +1,1661 @@
+@@ -0,0 +1,1798 @@
 +// Modified by Dual contributors on 2026-10-03 and 2026-10-04: Zen mode rails and window controls.
 +// These modifications are licensed under GPL-3.0; original notices are retained.
 +
@@ -4623,7 +4758,10 @@
 +#include "chrome/browser/ui/views/frame/browser_widget.h"
 +#include "chrome/browser/ui/views/frame/contents_web_view.h"
 +#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
++#include "chrome/browser/ui/views/helium/frame_corner_radius.h"
 +#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
++#include "chrome/browser/ui/views/tabs/vertical/vertical_new_tab_button.h"
++#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
 +#include "chrome/grit/theme_resources.h"
 +#include "components/vector_icons/vector_icons.h"
 +#include "content/public/browser/native_resize_sync_mac.h"
@@ -4640,6 +4778,7 @@
 +#include "ui/gfx/image/image_skia_util_mac.h"
 +#include "ui/gfx/mac/coordinate_conversion.h"
 +#include "ui/gfx/paint_vector_icon.h"
++#include "ui/views/controls/label.h"
 +#include "ui/views/view_observer.h"
 +#include "ui/views/widget/widget_observer.h"
 +#include "url/gurl.h"
@@ -4700,6 +4839,40 @@
 +  return nullptr;
 +}
 +
++// Helium's floating side chrome keeps this far from the window's edges
++// (kZenModeVTSPadding); used until the visible pane's strip is measured.
++constexpr int kZenFloatingPadding = 8;
++
++// The strip's own new tab button, whose label the Zen launch panel repeats.
++VerticalNewTabButton* FindNewTabButton(views::View* root) {
++  if (!root) {
++    return nullptr;
++  }
++  if (auto* button = views::AsViewClass<VerticalNewTabButton>(root)) {
++    return button;
++  }
++  for (views::View* child : root->children()) {
++    if (auto* button = FindNewTabButton(child)) {
++      return button;
++    }
++  }
++  return nullptr;
++}
++
++// That button's label, a child view of the button.
++views::Label* FindNewTabLabel(views::View* root) {
++  auto* button = FindNewTabButton(root);
++  if (!button) {
++    return nullptr;
++  }
++  for (views::View* child : button->children()) {
++    if (auto* label = views::AsViewClass<views::Label>(child)) {
++      return label;
++    }
++  }
++  return nullptr;
++}
++
 +// Native resize callbacks may pump tasks that close a tab or the entire pair.
 +// Track Views lifetimes and restore the previous state, including nested use.
 +class ScopedNativeContentsResize {
@@ -4751,6 +4924,17 @@
 +  int background_y_offset = 0;
 +  uint32_t background_generation = 0;
 +  int pane_edge_inset = 0;
++  // Zen mode rails, from the visible pane's floating strip.
++  int floating_top = kZenFloatingPadding;
++  int floating_bottom = kZenFloatingPadding;
++  int floating_width = 0;
++  int floating_row_top = kZenFloatingPadding;
++  int floating_radius = 0;
++  std::u16string new_tab_title;
++  std::string title_font_name;
++  int title_font_size = 0;
++  int title_font_weight = 0;
++  SkColor title_color = SK_ColorTRANSPARENT;
 +  bool operator==(const RailStyleInputs&) const = default;
 +};
 +
@@ -4901,7 +5085,7 @@
 +      rail_observations_.AddObservation(rail);
 +    }
 +    UpdateRailStyle();
-+    UpdateWindowControlsOwner();
++    InvalidateRails();
 +    ScheduleZenState();
 +    ScheduleSave();
 +  }
@@ -4992,6 +5176,44 @@
 +        }
 +      }
 +    }
++    // Zen mode rails float like the visible pane's own strip: the same
++    // vertical extent, width and first row, and its new tab button's label.
++    inputs.floating_radius = GetGenericFrameRadius();
++    std::optional<gfx::Font> title_font;
++    if (Browser* source = FloatingRailSource()) {
++      auto* source_view = BrowserView::GetBrowserViewForBrowser(source);
++      auto* source_rail = GetPaneRail(source);
++      // A hidden Zen strip is still laid out; only its x slides away.
++      if (source_view && source_view->GetWidget() && source_rail &&
++          !source_rail->size().IsEmpty()) {
++        const gfx::Rect pane = gfx::ScreenRectFromNSRect(
++            source_view->GetNativeWindow().GetNativeNSWindow().frame);
++        const gfx::Rect strip = source_rail->GetBoundsInScreen();
++        // The strip moves below the toolbar while that reveals. Follow only
++        // its settled positions; a hidden rail need not track the animation.
++        const float top_ratio = source_view->GetTopChromeRevealRatio();
++        if (top_ratio <= 0.f || top_ratio >= 1.f) {
++          floating_top_ = std::clamp(strip.y() - pane.y(), 0, pane.height() / 2);
++          floating_bottom_ =
++              std::clamp(pane.bottom() - strip.bottom(), 0, pane.height() / 2);
++        }
++        inputs.floating_width = source_rail->width();
++        const int row_top = source_rail->GetDualFirstRowTop();
++        inputs.floating_row_top = row_top > 0 ? row_top : kZenFloatingPadding;
++        if (auto* label =
++                FindNewTabLabel(source_rail->GetBottomContainer())) {
++          const gfx::Font& font = label->font_list().GetPrimaryFont();
++          title_font = font;
++          inputs.new_tab_title = std::u16string(label->GetText());
++          inputs.title_font_name = font.GetFontName();
++          inputs.title_font_size = font.GetFontSize();
++          inputs.title_font_weight = static_cast<int>(font.GetWeight());
++          inputs.title_color = label->GetEnabledColor();
++        }
++      }
++    }
++    inputs.floating_top = floating_top_;
++    inputs.floating_bottom = floating_bottom_;
 +    const ui::ThemeProvider* theme = view->GetThemeProvider();
 +    const gfx::ImageSkia* background = nullptr;
 +    if (theme && theme->HasCustomImage(IDR_THEME_TOOLBAR)) {
@@ -5020,6 +5242,16 @@
 +    style.cornerRadius = inputs.corner_radius;
 +    style.buttonTop = inputs.button_top;
 +    style.paneEdgeInset = inputs.pane_edge_inset;
++    style.floatingTop = inputs.floating_top;
++    style.floatingBottom = inputs.floating_bottom;
++    style.floatingWidth = inputs.floating_width;
++    style.floatingRowTop = inputs.floating_row_top;
++    style.floatingCornerRadius = inputs.floating_radius;
++    if (title_font && !inputs.new_tab_title.empty()) {
++      style.launchTitle = base::SysUTF16ToNSString(inputs.new_tab_title);
++      style.titleFont = (__bridge NSFont*)title_font->GetCTFont();
++      style.titleColor = color(inputs.title_color);
++    }
 +    style.backgroundColor = color(inputs.colors[0]);
 +    style.buttonColor = color(inputs.colors[1]);
 +    style.hoverColor = color(inputs.colors[2]);
@@ -5042,11 +5274,39 @@
 +    }
 +    rail_style_inputs_ = inputs;
 +    [host_ applyRailStyle:style];
-+    UpdateWindowControlsOwner();
++  }
++
++  // The visible pane whose strip a Zen mode rail mirrors: a lone pane, or
++  // the sibling of a collapsed one.
++  Browser* FloatingRailSource() const {
++    if (!browsers_[0] != !browsers_[1]) {
++      return browsers_[0] ? browsers_[0].get() : browsers_[1].get();
++    }
++    for (size_t side = 0; side < 2; ++side) {
++      if (browsers_[side] &&
++          [host_ isPaneHidden:static_cast<HeliumDualPaneSide>(1 - side)]) {
++        return browsers_[side];
++      }
++    }
++    return nullptr;
++  }
++
++  // Each strip's hide button depends on its sibling (see CanHide()); lay the
++  // strips out again whenever the pair or a pane's visibility changes. Do it
++  // now: an idle pane may not draw again until the pointer reaches it, and a
++  // layout then can land in the middle of a click.
++  void InvalidateRails() {
++    for (Browser* browser : browsers_) {
++      auto* rail = browser ? GetPaneRail(browser) : nullptr;
++      if (!rail) continue;
++      rail->InvalidateLayout();
++      if (auto* widget = rail->GetWidget()) widget->LayoutRootViewIfNecessary();
++    }
 +  }
 +
 +  // The pane that shows the host's window controls must reserve their area in
-+  // its own layout (BrowserFrameViewMac asks PaneShowsWindowControls()).
++  // its own layout (BrowserFrameViewMac asks PaneShowsWindowControls()). The
++  // host calls this whenever the controls move, before resizing the panes.
 +  void UpdateWindowControlsOwner() {
 +    NSWindow* owner = host_.windowControlsPane;
 +    if (owner == window_controls_owner_) return;
@@ -5126,6 +5386,8 @@
 +    }
 +    view->InvalidateLayout();
 +    view->GetWidget()->LayoutRootViewIfNecessary();
++    InvalidateRails();
++    ScheduleRailStyle();
 +    if (!hidden) [host_ activatePane:NativeSide(view->browser()->helium_dual_role())];
 +  }
 +  void RestoreHiddenViews(size_t side) {
@@ -5422,7 +5684,7 @@
 +      }
 +      if (!weak_this) return;
 +    }
-+    UpdateWindowControlsOwner();
++    InvalidateRails();
 +    ScheduleRailStyle();
 +    ScheduleZenState();
 +  }
@@ -5516,6 +5778,7 @@
 +        }
 +      }
 +    }
++    InvalidateRails();
 +    ScheduleRailStyle();
 +    ScheduleSave();
 +    return true;
@@ -5854,6 +6117,9 @@
 +  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
 +      rail_observations_{this};
 +  std::optional<RailStyleInputs> rail_style_inputs_;
++  // Settled vertical extent of the visible pane's floating strip.
++  int floating_top_ = kZenFloatingPadding;
++  int floating_bottom_ = kZenFloatingPadding;
 +  __weak NSWindow* window_controls_owner_ = nil;
 +  // Renderer resize deadlines held across an asynchronous divider drag.
 +  std::optional<ScopedNativeContentsResize> drag_resize_;
@@ -6196,6 +6462,12 @@
 +    self.pair->RevealZenSideChrome(edge, pane);
 +  }
 +}
++- (void)heliumDualWindowHostDidChangeWindowControlsPane:
++    (HeliumDualWindowHost*)host {
++  if (self.pair) {
++    self.pair->UpdateWindowControlsOwner();
++  }
++}
 +- (void)heliumDualWindowHost:(HeliumDualWindowHost*)host
 +          setLeftPaneFrame:(NSRect)leftFrame
 +            rightPaneFrame:(NSRect)rightFrame {
@@ -6439,8 +6711,8 @@
 +}
 --- /dev/null
 +++ b/chrome/browser/ui/helium/helium_dual_window_host_mac.h
-@@ -0,0 +1,127 @@
-+// Modified by Dual contributors on 2026-10-03 and 2026-10-04: edge resizing and Zen mode rails.
+@@ -0,0 +1,145 @@
++// Modified by Dual contributors on 2026-10-03 and 2026-10-04: edge resizing, Zen mode rails and window controls.
 +// These modifications are licensed under GPL-3.0; original notices are retained.
 +
 +// Copyright 2026 Helium Dual contributors.
@@ -6478,6 +6750,20 @@
 +// beyond what it leaves next to its own tab rail. The host rail is narrowed by
 +// this much so both side strips look equally wide.
 +@property(nonatomic) CGFloat paneEdgeInset;
++// Zen mode rails float like Helium's side chrome on the visible pane: as far
++// from the top and bottom as that pane's strip, rounded and outlined.
++@property(nonatomic) CGFloat floatingTop;
++@property(nonatomic) CGFloat floatingBottom;
++@property(nonatomic) CGFloat floatingCornerRadius;
++// The launch panel's width and where its row starts, as on the visible
++// pane's strip when it is shown.
++@property(nonatomic) CGFloat floatingWidth;
++@property(nonatomic) CGFloat floatingRowTop;
++// The label of that strip's new tab button, drawn beside the launch icon when
++// the launch panel is wide enough.
++@property(nonatomic, copy, nullable) NSString* launchTitle;
++@property(nonatomic, strong, nullable) NSFont* titleFont;
++@property(nonatomic, strong, nullable) NSColor* titleColor;
 +@end
 +
 +@class HeliumDualWindowHost;
@@ -6511,6 +6797,10 @@
 +- (void)heliumDualWindowHost:(HeliumDualWindowHost*)host
 +          pointerReachedEdge:(HeliumDualPaneSide)edge
 +                      ofPane:(HeliumDualPaneSide)pane;
++// The window controls moved to another pane (or out of all panes). Sent
++// before the panes are resized, so both lay out their caption area anew.
++- (void)heliumDualWindowHostDidChangeWindowControlsPane:
++    (HeliumDualWindowHost*)host;
 +@end
 +
 +// Pure AppKit helper. Real Chromium BrowserWidgets remain top-level Widgets,
@@ -6569,7 +6859,7 @@
 +#endif  // HELIUM_DUAL_WINDOW_HOST_MAC_H_
 --- /dev/null
 +++ b/chrome/browser/ui/helium/helium_dual_window_host_mac.mm
-@@ -0,0 +1,1858 @@
+@@ -0,0 +1,2039 @@
 +// Modified by Dual contributors on 2026-10-03 and 2026-10-04: edge resizing, Zen mode rails and window controls.
 +// These modifications are licensed under GPL-3.0; original notices are retained.
 +
@@ -6579,6 +6869,7 @@
 +
 +#import "chrome/browser/ui/helium/helium_dual_window_host_mac.h"
 +#import <CoreGraphics/CoreGraphics.h>
++#import <QuartzCore/QuartzCore.h>
 +
 +#include <algorithm>
 +#include <cmath>
@@ -6600,6 +6891,12 @@
 +constexpr CGFloat kRailRevealFullscreenTrigger = 2;
 +constexpr CGFloat kRailRevealLeeway = 8;
 +constexpr NSTimeInterval kRailRevealDuration = 0.2;
++// Helium's floating side chrome: kZenModeVTSPadding from the window edge.
++constexpr CGFloat kFloatingRailInset = 8;
++// The new tab button's icon and label insets in Helium's vertical strip.
++constexpr CGFloat kLaunchTitleInset = 7;
++// Narrower launch panels show the icon alone, like a collapsed strip.
++constexpr CGFloat kLaunchTitleMinWidth = 100;
 +constexpr NSTimeInterval kRailHoverExitGrace = 0.15;
 +constexpr NSTimeInterval kRailCursorExitGrace = 3.0;
 +constexpr NSTimeInterval kRailPollInterval = 0.1;
@@ -6652,6 +6949,14 @@
 +@synthesize icon = _icon;
 +@synthesize backgroundImage = _backgroundImage;
 +@synthesize paneEdgeInset = _paneEdgeInset;
++@synthesize floatingTop = _floatingTop;
++@synthesize floatingBottom = _floatingBottom;
++@synthesize floatingCornerRadius = _floatingCornerRadius;
++@synthesize floatingWidth = _floatingWidth;
++@synthesize floatingRowTop = _floatingRowTop;
++@synthesize launchTitle = _launchTitle;
++@synthesize titleFont = _titleFont;
++@synthesize titleColor = _titleColor;
 +- (instancetype)init {
 +  self = [super init];
 +  if (self) {
@@ -6660,6 +6965,10 @@
 +    _horizontalPadding = 6;
 +    _cornerRadius = 8;
 +    _buttonTop = 42;
++    _floatingTop = kFloatingRailInset;
++    _floatingBottom = kFloatingRailInset;
++    _floatingCornerRadius = 10;
++    _floatingRowTop = kFloatingRailInset;
 +    _backgroundColor = NSColor.windowBackgroundColor;
 +    _buttonColor = NSColor.clearColor;
 +    _hoverColor = [NSColor.labelColor colorWithAlphaComponent:0.08];
@@ -6672,12 +6981,20 @@
 +
 +@interface HeliumDualLaunchButton : NSButton
 +@property(nonatomic, strong) HeliumDualRailStyle* railStyle;
++// Draw the new tab label beside a leading icon, like the strip's own button.
++@property(nonatomic) BOOL showsTitle;
 +@end
 +@implementation HeliumDualLaunchButton {
 +  NSTrackingArea* _trackingArea;
 +  BOOL _hovered;
 +}
 +@synthesize railStyle = _railStyle;
++@synthesize showsTitle = _showsTitle;
++- (void)setShowsTitle:(BOOL)showsTitle {
++  if (_showsTitle == showsTitle) return;
++  _showsTitle = showsTitle;
++  self.needsDisplay = YES;
++}
 +- (void)updateTrackingAreas {
 +  [super updateTrackingAreas];
 +  if (_trackingArea) {
@@ -6714,16 +7031,39 @@
 +    [(self.cell.highlighted ? style.pressedColor : style.hoverColor) setFill];
 +    [shape fill];
 +  }
++  const BOOL titled =
++      self.showsTitle && style.launchTitle.length > 0 && style.titleFont;
++  const NSSize iconSize = style.icon ? style.icon.size : NSZeroSize;
++  const CGFloat iconX = titled ? kLaunchTitleInset
++                               : (NSWidth(self.bounds) - iconSize.width) / 2;
 +  if (style.icon) {
-+    NSSize size = style.icon.size;
-+    [style.icon drawInRect:NSMakeRect((NSWidth(self.bounds) - size.width) / 2,
-+                                      (NSHeight(self.bounds) - size.height) / 2,
-+                                      size.width, size.height)
++    [style.icon drawInRect:NSMakeRect(iconX,
++                                      (NSHeight(self.bounds) - iconSize.height) / 2,
++                                      iconSize.width, iconSize.height)
 +                  fromRect:NSZeroRect
 +                 operation:NSCompositingOperationSourceOver
 +                  fraction:1
 +            respectFlipped:YES
 +                     hints:nil];
++  }
++  if (titled) {
++    NSMutableParagraphStyle* paragraph = [[NSMutableParagraphStyle alloc] init];
++    paragraph.lineBreakMode = NSLineBreakByTruncatingTail;
++    NSAttributedString* title = [[NSAttributedString alloc]
++        initWithString:style.launchTitle
++            attributes:@{
++              NSFontAttributeName : style.titleFont,
++              NSForegroundColorAttributeName :
++                  style.titleColor ?: NSColor.secondaryLabelColor,
++              NSParagraphStyleAttributeName : paragraph,
++            }];
++    const CGFloat x = iconX + iconSize.width + kLaunchTitleInset;
++    const CGFloat height = std::ceil(title.size.height);
++    [title drawInRect:NSMakeRect(x, (NSHeight(self.bounds) - height) / 2,
++                                 std::max<CGFloat>(
++                                     0, NSWidth(self.bounds) - x -
++                                            kLaunchTitleInset),
++                                 height)];
 +  }
 +}
 +- (void)drawFocusRingMask {
@@ -6746,7 +7086,11 @@
 +- (void)restoreLastActivePane;
 +- (void)captureNormalFrameIfNeeded;
 +- (void)updatePaneCorners;
++- (void)updateWindowControlsOwner;
 +- (void)updateWindowControls;
++- (NSRect)floatingRailRect:(NSRect)area width:(CGFloat)width right:(BOOL)right;
++- (void)bringChildToFront:(NSWindow*)child;
++- (void)applyRailPanelVisible:(BOOL)show animated:(BOOL)animated;
 +- (CGFloat)windowCornerRadius;
 +- (CGFloat)minimumContentWidth;
 +- (CGFloat)edgeInset;
@@ -6838,26 +7182,29 @@
 +          userInfo:nil];
 +  [self addTrackingArea:_cursorTrackingArea];
 +}
-+- (void)cursorUpdate:(NSEvent*)event {
++- (void)applyCursor {
 +  SetCursorIfNeeded(_mousePressed ? NSCursor.closedHandCursor
 +                                  : NSCursor.resizeLeftRightCursor);
 +}
++- (void)cursorUpdate:(NSEvent*)event {
++  [self applyCursor];
++}
 +- (void)mouseEntered:(NSEvent*)event {
 +  _hovered = YES;
-+  [self cursorUpdate:event];
++  [self applyCursor];
 +  // The key pane can reset the cursor after this enter event while it handles
 +  // its own exit. Reassert once after that event has been processed.
 +  __weak HeliumDualDividerView* weakSelf = self;
 +  dispatch_async(dispatch_get_main_queue(), ^{
 +    HeliumDualDividerView* divider = weakSelf;
 +    if (divider && divider->_hovered && !divider.hidden) {
-+      [divider cursorUpdate:nil];
++      [divider applyCursor];
 +    }
 +  });
 +}
 +- (void)mouseMoved:(NSEvent*)event {
 +  if (_hovered && !self.hidden) {
-+    [self cursorUpdate:event];
++    [self applyCursor];
 +  }
 +}
 +- (void)mouseExited:(NSEvent*)event {
@@ -7179,24 +7526,33 @@
 +}
 +@end
 +
-+// Content of the launch rail shown above a lone pane in Zen mode.
++// Content of the launch rail shown above a lone pane in Zen mode: a clear
++// container reaching the window edge, so the panel inside can slide in from
++// that edge like Helium's floating side chrome, clipped by the window.
 +@interface HeliumDualRailOverlayView : NSView
++@end
++// The floating launch panel itself. It paints the toolbar color without the
++// theme image, which is rasterized for the narrow host rail.
++@interface HeliumDualRailPanelView : HeliumDualRailOverlayView
 +@property(nonatomic, strong) HeliumDualRailStyle* railStyle;
 +@end
-+@implementation HeliumDualRailOverlayView
++@implementation HeliumDualRailPanelView
 +@synthesize railStyle = _railStyle;
 +- (void)drawRect:(NSRect)dirtyRect {
-+  [(self.railStyle.backgroundColor ?: NSColor.windowBackgroundColor) setFill];
-+  NSRectFill(dirtyRect);
-+  if (NSImage* image = self.railStyle.backgroundImage) {
-+    [image drawInRect:self.bounds
-+             fromRect:NSZeroRect
-+            operation:NSCompositingOperationSourceOver
-+             fraction:1
-+       respectFlipped:YES
-+                hints:nil];
-+  }
++  HeliumDualRailStyle* style = self.railStyle;
++  const CGFloat radius = style.floatingCornerRadius;
++  NSBezierPath* shape = [NSBezierPath
++      bezierPathWithRoundedRect:NSInsetRect(self.bounds, 0.5, 0.5)
++                        xRadius:radius
++                        yRadius:radius];
++  [(style.backgroundColor ?: NSColor.windowBackgroundColor) setFill];
++  [shape fill];
++  [(style.separatorColor ?: NSColor.separatorColor) setStroke];
++  shape.lineWidth = 1;
++  [shape stroke];
 +}
++@end
++@implementation HeliumDualRailOverlayView
 +- (BOOL)mouseDownCanMoveWindow {
 +  return NO;
 +}
@@ -7252,7 +7608,13 @@
 +  BOOL _railRevealed;
 +  NSWindow* _railOverlay;
 +  HeliumDualRailOverlayView* _railOverlayView;
++  HeliumDualRailPanelView* _railPanel;
 +  HeliumDualLaunchButton* _overlayLaunchButton;
++  // The panel's frame inside the overlay when shown and when slid out.
++  NSRect _railPanelShownFrame;
++  NSRect _railPanelHiddenFrame;
++  BOOL _railPanelShown;
++  BOOL _railPanelAnimating;
 +  id _pointerMonitor;
 +  NSTimer* _railHideTimer;
 +  NSTimer* _railPollTimer;
@@ -7607,7 +7969,12 @@
 +      _railStyle.buttonHeight != style.buttonHeight ||
 +      _railStyle.horizontalPadding != style.horizontalPadding ||
 +      _railStyle.buttonTop != style.buttonTop ||
-+      _railStyle.paneEdgeInset != style.paneEdgeInset;
++      _railStyle.paneEdgeInset != style.paneEdgeInset ||
++      _railStyle.floatingTop != style.floatingTop ||
++      _railStyle.floatingBottom != style.floatingBottom ||
++      _railStyle.floatingCornerRadius != style.floatingCornerRadius ||
++      _railStyle.floatingWidth != style.floatingWidth ||
++      _railStyle.floatingRowTop != style.floatingRowTop;
 +  _railStyle = style;
 +  HeliumDualBackgroundView* background =
 +      (HeliumDualBackgroundView*)_window.contentView;
@@ -7623,8 +7990,8 @@
 +  }
 +  _overlayLaunchButton.railStyle = style;
 +  _overlayLaunchButton.needsDisplay = YES;
-+  _railOverlayView.railStyle = style;
-+  _railOverlayView.needsDisplay = YES;
++  _railPanel.railStyle = style;
++  _railPanel.needsDisplay = YES;
 +  _window.contentMinSize =
 +      NSMakeSize([self minimumContentWidth], kMinimumContentHeight);
 +  // Palette/background updates must not feed native bounds notifications back
@@ -7715,8 +8082,12 @@
 +    const CGFloat railWidth =
 +        std::min(_hiddenRailWidth[hidden], NSWidth(area) / 2);
 +    const NSRect railRect =
-+        NSMakeRect(hidden == 0 ? NSMinX(area) : NSMaxX(area) - railWidth,
-+                   NSMinY(area), railWidth, NSHeight(area));
++        autoHideRail ? [self floatingRailRect:area
++                                        width:railWidth
++                                        right:hidden == 1]
++                     : NSMakeRect(hidden == 0 ? NSMinX(area)
++                                              : NSMaxX(area) - railWidth,
++                                  NSMinY(area), railWidth, NSHeight(area));
 +    NSRect paneRect = area;
 +    if (!autoHideRail) {
 +      paneRect.size.width -= railWidth;
@@ -7770,9 +8141,12 @@
 +          NSWindowCollectionBehaviorFullScreenAuxiliary;
 +      _railOverlayView =
 +          [[HeliumDualRailOverlayView alloc] initWithFrame:NSZeroRect];
-+      _railOverlayView.railStyle = _railStyle;
 +      _railOverlayView.wantsLayer = YES;
 +      _railOverlay.contentView = _railOverlayView;
++      _railPanel = [[HeliumDualRailPanelView alloc] initWithFrame:NSZeroRect];
++      _railPanel.railStyle = _railStyle;
++      _railPanel.wantsLayer = YES;
++      [_railOverlayView addSubview:_railPanel];
 +      _overlayLaunchButton = [HeliumDualLaunchButton
 +          buttonWithTitle:@""
 +                   target:self
@@ -7780,7 +8154,7 @@
 +      _overlayLaunchButton.bezelStyle = NSBezelStyleRegularSquare;
 +      _overlayLaunchButton.bordered = NO;
 +      _overlayLaunchButton.railStyle = _railStyle;
-+      [_railOverlayView addSubview:_overlayLaunchButton];
++      [_railPanel addSubview:_overlayLaunchButton];
 +    }
 +    if (_railOverlay.parentWindow != _window) {
 +      [_window addChildWindow:_railOverlay ordered:NSWindowAbove];
@@ -7790,30 +8164,42 @@
 +                            : @"左のブラウザで新しいタブを開く";
 +    _overlayLaunchButton.toolTip = label;
 +    _overlayLaunchButton.accessibilityLabel = label;
-+    // Inside the resize band, like the panes, so the edge still resizes.
-+    const NSRect overlayRect = NSMakeRect(
-+        right ? NSMaxX(area) - _railStyle.width : NSMinX(area), NSMinY(area),
-+        _railStyle.width, NSHeight(area));
++    // A floating panel as wide as the visible pane's strip when shown, inside
++    // the resize band like the panes, so the edge still resizes.
++    const CGFloat panelWidth = std::min<CGFloat>(
++        _railStyle.floatingWidth > 0 ? _railStyle.floatingWidth
++                                     : _railStyle.width,
++        NSWidth(area) / 2);
++    const NSRect panelRect =
++        [self floatingRailRect:area width:panelWidth right:right];
++    // The overlay also covers the gap to the window edge: the panel slides
++    // in from there, clipped by the overlay like Helium's strip by its pane.
++    const NSRect overlayRect =
++        right ? NSMakeRect(NSMinX(panelRect), NSMinY(panelRect),
++                           NSMaxX(area) - NSMinX(panelRect),
++                           NSHeight(panelRect))
++              : NSMakeRect(NSMinX(area), NSMinY(panelRect),
++                           NSMaxX(panelRect) - NSMinX(area),
++                           NSHeight(panelRect));
 +    [_railOverlay setFrame:[_window convertRectToScreen:
 +                               [_window.contentView convertRect:overlayRect
 +                                                         toView:nil]]
 +                   display:NO];
-+    _overlayLaunchButton.frame =
-+        NSMakeRect(_railStyle.horizontalPadding,
-+                   buttonY - NSMinY(area), buttonWidth, _railStyle.buttonHeight);
-+    // Round the outer corners with the window's. Both corners on one side
-+    // are masked, so the layer's y direction does not matter here.
-+    CALayer* layer = _railOverlayView.layer;
-+    const CGFloat radius = edge > 0 ? [self windowCornerRadius] : 0;
-+    const CACornerMask corners =
-+        right ? (kCALayerMaxXMinYCorner | kCALayerMaxXMaxYCorner)
-+              : (kCALayerMinXMinYCorner | kCALayerMinXMaxYCorner);
-+    layer.cornerRadius = radius;
-+    layer.maskedCorners = corners;
-+    layer.masksToBounds = radius > 0;
-+  } else if (_railOverlay) {
-+    _railOverlay.alphaValue = 0;
-+    _railOverlay.ignoresMouseEvents = YES;
++    _railPanelShownFrame = NSMakeRect(NSMinX(panelRect) - NSMinX(overlayRect),
++                                      0, panelWidth, NSHeight(panelRect));
++    _railPanelHiddenFrame = NSOffsetRect(
++        _railPanelShownFrame,
++        right ? NSWidth(overlayRect) - NSMinX(_railPanelShownFrame)
++              : -NSMaxX(_railPanelShownFrame),
++        0);
++    const CGFloat panelButtonWidth = std::max<CGFloat>(
++        0, panelWidth - 2 * _railStyle.horizontalPadding);
++    _overlayLaunchButton.frame = NSMakeRect(
++        _railStyle.horizontalPadding,
++        NSHeight(panelRect) - _railStyle.floatingRowTop -
++            _railStyle.buttonHeight,
++        panelButtonWidth, _railStyle.buttonHeight);
++    _overlayLaunchButton.showsTitle = panelWidth >= kLaunchTitleMinWidth;
 +  }
 +  NSView* view = _window.contentView;
 +  // Record both targets before resizing either window: the adapter can pump
@@ -7822,6 +8208,9 @@
 +      [view convertRect:leftRect toView:nil]];
 +  _expectedPaneFrames[1] = [_window convertRectToScreen:
 +      [view convertRect:rightRect toView:nil]];
++  // A pane that gains or loses the window controls must lay out its caption
++  // area at its new size, so settle the owner before resizing.
++  [self updateWindowControlsOwner];
 +  if ([self.delegate respondsToSelector:
 +          @selector(heliumDualWindowHost:setLeftPaneFrame:rightPaneFrame:)]) {
 +    [self.delegate heliumDualWindowHost:self
@@ -7864,15 +8253,25 @@
 +  // Panes stop at the resize band; a corner within it still meets the host's
 +  // rounded corner. Matching the host radius keeps it inside that curve.
 +  const CGFloat reach = [self edgeInset] + 1;
++  // A collapsed pane's Zen rail floats free of the window edges, rounded on
++  // every corner like Helium's floating strip.
++  NSWindow* floatingRail =
++      _leftWindow && _rightWindow ? [self railRevealWindow] : nil;
 +  NSWindow* panes[] = {_leftWindow, _rightWindow};
 +  for (size_t side = 0; side < 2; ++side) {
 +    NSWindow* pane = panes[side];
 +    if (!pane) continue;
 +    const NSRect frame = _expectedPaneFrames[side];
-+    const BOOL left = std::abs(NSMinX(frame) - NSMinX(host)) < reach;
-+    const BOOL right = std::abs(NSMaxX(frame) - NSMaxX(host)) < reach;
-+    const BOOL top = std::abs(NSMaxY(frame) - NSMaxY(host)) < reach;
-+    const BOOL bottom = std::abs(NSMinY(frame) - NSMinY(host)) < reach;
++    const BOOL floating = pane == floatingRail;
++    const BOOL left =
++        floating || std::abs(NSMinX(frame) - NSMinX(host)) < reach;
++    const BOOL right =
++        floating || std::abs(NSMaxX(frame) - NSMaxX(host)) < reach;
++    const BOOL top = floating || std::abs(NSMaxY(frame) - NSMaxY(host)) < reach;
++    const BOOL bottom =
++        floating || std::abs(NSMinY(frame) - NSMinY(host)) < reach;
++    const CGFloat paneRadius =
++        floating ? _railStyle.floatingCornerRadius : radius;
 +    NSView* view = pane.contentView;
 +    view.wantsLayer = YES;
 +    CALayer* layer = view.layer;
@@ -7887,7 +8286,7 @@
 +    if (top && right) corners |= topRight;
 +    if (bottom && left) corners |= bottomLeft;
 +    if (bottom && right) corners |= bottomRight;
-+    const CGFloat applied = corners && radius > 0 ? radius : 0;
++    const CGFloat applied = corners && paneRadius > 0 ? paneRadius : 0;
 +    if (layer.cornerRadius != applied || layer.maskedCorners != corners) {
 +      layer.cornerRadius = applied;
 +      layer.maskedCorners = corners;
@@ -7913,10 +8312,9 @@
 +// The host titlebar is hidden under the panes. Show equivalent controls in the
 +// left pane, or in the right pane when the left one is absent or collapsed to
 +// its rail, at the offsets AppKit uses from the host's own top-left corner.
-+- (void)updateWindowControls {
++- (void)updateWindowControlsOwner {
 +  const BOOL fullscreen = (_window.styleMask & NSWindowStyleMaskFullScreen) != 0;
 +  const BOOL useLeft = _leftWindow && !(_rightWindow && _paneHidden[0]);
-+  const size_t side = useLeft ? 0 : 1;
 +  NSWindow* target = fullscreen ? nil : (useLeft ? _leftWindow : _rightWindow);
 +  const NSWindowButton types[] = {NSWindowCloseButton,
 +                                  NSWindowMiniaturizeButton,
@@ -7924,28 +8322,40 @@
 +  for (NSWindowButton type : types) {
 +    [_window standardWindowButton:type].hidden = target != nil;
 +  }
-+  if (target != _windowControlsPane) {
-+    for (NSButton* button in _paneWindowButtons) {
-+      [button removeFromSuperview];
-+    }
-+    _paneWindowButtons = nil;
-+    _windowControlsPane = target;
-+    if (target) {
-+      _paneWindowButtons = [NSMutableArray array];
-+      const SEL actions[] = {@selector(windowControlClose:),
-+                             @selector(windowControlMiniaturize:),
-+                             @selector(windowControlZoom:)};
-+      for (size_t i = 0; i < 3; ++i) {
-+        NSButton* button = [NSWindow standardWindowButton:types[i]
-+                                             forStyleMask:_window.styleMask];
-+        button.target = self;
-+        button.action = actions[i];
-+        [target.contentView addSubview:button];
-+        [_paneWindowButtons addObject:button];
-+      }
++  if (target == _windowControlsPane) return;
++  for (NSButton* button in _paneWindowButtons) {
++    [button removeFromSuperview];
++  }
++  _paneWindowButtons = nil;
++  _windowControlsPane = target;
++  if (target) {
++    _paneWindowButtons = [NSMutableArray array];
++    const SEL actions[] = {@selector(windowControlClose:),
++                           @selector(windowControlMiniaturize:),
++                           @selector(windowControlZoom:)};
++    for (size_t i = 0; i < 3; ++i) {
++      NSButton* button = [NSWindow standardWindowButton:types[i]
++                                           forStyleMask:_window.styleMask];
++      button.target = self;
++      button.action = actions[i];
++      [target.contentView addSubview:button];
++      [_paneWindowButtons addObject:button];
 +    }
 +  }
++  if ([self.delegate respondsToSelector:@selector(
++                         heliumDualWindowHostDidChangeWindowControlsPane:)]) {
++    [self.delegate heliumDualWindowHostDidChangeWindowControlsPane:self];
++  }
++}
++
++// Places the controls in their pane at its new size.
++- (void)updateWindowControls {
++  NSWindow* target = _windowControlsPane;
 +  if (!target) return;
++  const size_t side = target == _rightWindow ? 1 : 0;
++  const NSWindowButton types[] = {NSWindowCloseButton,
++                                  NSWindowMiniaturizeButton,
++                                  NSWindowZoomButton};
 +  // Same offsets from the pane's top-left corner as the host's controls have
 +  // from the host's.
 +  const NSRect hostFrame = _window.frame;
@@ -8235,10 +8645,73 @@
 +  if (revealed) {
 +    // Keep reading the pointer while shown (see -pointerMoved).
 +    [self setPointerPolling:YES];
++    // Above the pane it overlaps, which may have been attached or ordered
++    // front after it.
++    if (_window.visible && !_window.miniaturized) {
++      [self bringChildToFront:[self railRevealWindow]];
++    }
 +  } else {
 +    [self cancelRailHide];
 +  }
 +  [self applyRailVisibilityAnimated:YES];
++}
++
++// Helium's floating side chrome geometry in host content coordinates.
++- (NSRect)floatingRailRect:(NSRect)area width:(CGFloat)width right:(BOOL)right {
++  const CGFloat inset = kFloatingRailInset;
++  const CGFloat top = _railStyle.floatingTop;
++  const CGFloat bottom = _railStyle.floatingBottom;
++  return NSMakeRect(right ? NSMaxX(area) - inset - width : NSMinX(area) + inset,
++                    NSMinY(area) + bottom, width,
++                    std::max<CGFloat>(0, NSHeight(area) - top - bottom));
++}
++
++// Child windows stack in the order they were added, and -orderWindow:
++// relativeTo: does not reorder siblings. Re-adding one raises it.
++- (void)bringChildToFront:(NSWindow*)child {
++  if (!child || child.parentWindow != _window) return;
++  [_window removeChildWindow:child];
++  [_window addChildWindow:child ordered:NSWindowAbove];
++}
++
++// The launch panel slides in from the window edge like Helium's strip.
++- (void)applyRailPanelVisible:(BOOL)show animated:(BOOL)animated {
++  if (!_railPanel) return;
++  const BOOL changed = show != _railPanelShown;
++  _railPanelShown = show;
++  if (show) _railOverlay.alphaValue = 1;
++  if (!changed || !animated) {
++    // Geometry changes during a slide are applied when it ends.
++    if (!changed && _railPanelAnimating) return;
++    _railPanelAnimating = NO;
++    _railPanel.frame = show ? _railPanelShownFrame : _railPanelHiddenFrame;
++    if (!show) _railOverlay.alphaValue = 0;
++    return;
++  }
++  if (_railPanelAnimating) {
++    // Reverse from where the panel is now, not from the last target.
++    if (CALayer* presentation = _railPanel.layer.presentationLayer) {
++      _railPanel.frame = presentation.frame;
++    }
++  }
++  _railPanelAnimating = YES;
++  __weak HeliumDualWindowHost* weakSelf = self;
++  [NSAnimationContext runAnimationGroup:^(NSAnimationContext* context) {
++    context.duration = kRailRevealDuration;
++    // Helium's FAST_OUT_SLOW_IN_3.
++    context.timingFunction =
++        [CAMediaTimingFunction functionWithControlPoints:0.2f :0.f :0.f :1.f];
++    self->_railPanel.animator.frame =
++        show ? self->_railPanelShownFrame : self->_railPanelHiddenFrame;
++  }
++      completionHandler:^{
++        HeliumDualWindowHost* host = weakSelf;
++        if (!host || host->_railPanelShown != show) return;
++        host->_railPanelAnimating = NO;
++        host->_railPanel.frame =
++            show ? host->_railPanelShownFrame : host->_railPanelHiddenFrame;
++        if (!show) host->_railOverlay.alphaValue = 0;
++      }];
 +}
 +
 +- (void)applyRailVisibilityAnimated:(BOOL)animated {
@@ -8251,18 +8724,16 @@
 +    SetPaneInteractive(pane, YES);
 +  }
 +  if (_railOverlay && _railOverlay != rail) {
-+    _railOverlay.alphaValue = 0;
++    _railPanelAnimating = NO;
++    [self applyRailPanelVisible:NO animated:NO];
 +    SetPaneInteractive(_railOverlay, NO);
 +  }
 +  if (!rail) return;
 +  const BOOL show = _railRevealed;
 +  SetPaneInteractive(rail, show);
-+  if (show && _window.visible && !_window.miniaturized) {
-+    // Above the pane it overlaps, which may have been ordered front since.
-+    NSWindow* below = rail == _leftWindow    ? _rightWindow
-+                      : rail == _rightWindow ? _leftWindow
-+                                             : (_leftWindow ?: _rightWindow);
-+    if (below) [rail orderWindow:NSWindowAbove relativeTo:below.windowNumber];
++  if (rail == _railOverlay) {
++    [self applyRailPanelVisible:show animated:animated];
++    return;
 +  }
 +  const CGFloat alpha = show ? 1 : 0;
 +  if (rail.alphaValue == alpha && !animated) return;

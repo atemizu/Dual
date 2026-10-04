@@ -1,6 +1,6 @@
-# ビルド手順（Dual 6.2.3）
+# ビルド手順（Dual 6.2.4）
 
-Dual 6.2.3 は、Helium 0.17.2.2 を Helium 自身のリリース手順で準備したソースに、
+Dual 6.2.4 は、Helium 0.17.2.2 を Helium 自身のリリース手順で準備したソースに、
 `helium-dual-window.patch` を当て、`dual_rebrand.py` でアプリ内の名称とロゴを Dual のものにしてからビルドしています。
 
 ## 固定した入力
@@ -72,9 +72,9 @@ helium_build
 ```sh
 python3 /path/to/Dual/packaging/package_release.py \
   --built "build/src/out/Default/Helium Dual.app" \
-  --icon /path/to/Dual/Dual-6.icns --version 6.2.3 --out /path/to/release
+  --icon /path/to/Dual/Dual-6.icns --version 6.2.4 --out /path/to/release
 ```
 
-アプリ名を `Dual 6.2.3`、バンドル ID を Dual 5 と同じ `local.heliumdual.browser` にして
+アプリ名を `Dual 6.2.4`、バンドル ID を Dual 5 と同じ `local.heliumdual.browser` にして
 （既存のプロファイルを引き継ぐため）、アイコンを差し替え、アドホック署名して DMG を作ります。
 Apple Developer ID での署名・公証はしていません。

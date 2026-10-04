@@ -1,19 +1,20 @@
 {
   "status": "PASS",
-  "date": "2026-10-04",
-  "release": "Dual 6.2.3",
+  "date": "2026-10-05",
+  "release": "Dual 6.2.4",
   "source_only": false,
-  "binary": "Dual-6.2.3-macOS-arm64.dmg (ad-hoc signed), sha256 849f009f92809ab9c977d1f4cc833142ef950666a65afb314f30b499f5f70fc4",
-  "patch_files": 92,
+  "binary": "Dual-6.2.4-macOS-arm64.dmg (ad-hoc signed), sha256 d382d43c1ae14faca93741687db64597597743433aec58a8889d7795c20545d0",
+  "patch_files": 95,
   "patch_applies_to_prepared_helium_0.17.2.2": true,
-  "reproduces_build_sources": "pristine Helium 0.17.2.2 + helium-dual-window.patch + dual_rebrand.py + branding/ reproduce all 2304 touched files of the build tree; 57 differ only in publication notice comment lines",
-  "modification_notices": "files changed in 6.2.3 carry dated notices; BRANDING and settings_strings.grdp listed in MODIFICATIONS.md",
-  "in_app_helium_logos": "none (product logos, onboarding logo, partner badge and services header replaced or removed)",
+  "reproduces_build_sources": "the 95 patch files were compared with the build tree: 37 identical, 57 differ only in publication notice comment lines, 1 (chrome/app/settings_strings.grdp) is the string file dual_rebrand.py rewrites; dual_rebrand.py and branding/ are unchanged since 6.2.3, whose full check covered the rebrand output",
+  "modification_notices": "files changed in 6.2.4 carry dated notices, including the three files newly modified (render_widget_host_view_cocoa.mm, helium_crash_reporting.cc, crash_reporter_client.cc)",
+  "in_app_helium_logos": "none (unchanged since 6.2.3)",
   "upstream_license_copies_byte_identical": true,
   "terms_rechecked": [
-    "https://helium.computer/terms (2026-07-08)",
-    "https://helium.computer/privacy (2026-07-16)",
+    "https://helium.computer/terms (2026-07-08, unchanged)",
+    "https://helium.computer/privacy (2026-07-16, unchanged)",
     "https://helium.computer/brand"
   ],
-  "crash_reporting": "Helium's crash reporting sends to Helium's service when a user opts in; README asks Dual users to keep it off; to be disabled in Dual in the next update"
+  "crash_reporting": "Dual 6.2.4 sends no crash reports: the crash handler gets no upload URL and uploads are treated as disabled (no prompt, setting fixed to Disabled); checked on the released DMG's app",
+  "dmg_app_matches_tested_build": "framework UUID 4C4C447E-5555-3144-A152-4D591BB40848 in both the DMG app and the locally tested build"
 }

@@ -1,6 +1,6 @@
 # Copyright, licenses and attribution
 
-Copyright 2026 Helium Dual contributors (also written as "Dual contributors") — original contributions and modifications, GPL-3.0-only. Functional changes: 2026-09-08 to 2026-10-04 (Dual 6.2.3, based on Helium 0.17.2.2). Publication annotations and tooling: 2026-09-09, 2026-09-29 and 2026-10-04.
+Copyright 2026 Helium Dual contributors (also written as "Dual contributors") — original contributions and modifications, GPL-3.0-only. Functional changes: 2026-09-08 to 2026-10-05 (Dual 6.2.4, based on Helium 0.17.2.2). Publication annotations and tooling: 2026-09-09, 2026-09-29, 2026-10-04 and 2026-10-05.
 
 This is an independent, unofficial derivative. It is not affiliated with imput LLC or the Helium project.
 
