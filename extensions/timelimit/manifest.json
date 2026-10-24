@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_name__",
+  "description": "__MSG_description__",
+  "version": "1.0.0",
+  "default_locale": "en",
+  "minimum_chrome_version": "121",
+  "incognito": "not_allowed",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqdY9BP6v2cSMS6ssKQitc/ik0QcouOSaru1yZlmwqyOaLmfBD7fGZkIjmpwFiGAlPM9eqDBS15sBR+ANgdZjYkkgHs3YCagyvmsnRXy7pjij51nJDwrWQeFvl5F4g5u9hPN9BkhrO0R84SloshtDLEzKtvADnWROFBRCFyf3MghC8dTuErznYJ3DKM+UgA9EgJji7QaHJ9PkWFkJJuF9GqTOc2OoHxlbmrLVuHVwm56LaeIV9PU/MEkw3XjcWxgBtGHVgt3zQ8wW6/MOTnYEcGnIZ3Vr5Omw2AnEc3VUAecpZQfEPUAQhvoilPyeNIxww1kqhmzCKXKbqEwq4c+o7wIDAQAB",
+  "permissions": ["alarms", "idle", "storage", "tabs"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "__MSG_name__",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/16.png",
+      "32": "icons/32.png"
+    }
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  }
+}

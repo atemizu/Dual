@@ -1,0 +1,11 @@
+{
+  "name": {
+    "message": "Dual Page Translate"
+  },
+  "description": {
+    "message": "Translates pages between Japanese and English with a language model (Gemma 4 E4B) running on this computer; the text of the page is never sent anywhere. The model is downloaded once, the first time. Comes with Dual; it can be turned off or removed."
+  },
+  "command": {
+    "message": "Translate this page, or show the original"
+  }
+}

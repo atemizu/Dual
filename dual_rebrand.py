@@ -17,6 +17,7 @@ helium-dual-window.patch:
 2. The About page says Dual is an unofficial build based on Helium.
 3. Product logos: Dual's mark replaces Helium's at the paths Helium's own
    branding step (helium_resources.txt) writes.
+4. Japanese for the messages Dual itself adds (the patch has them in English).
 
 It reuses Helium's name substitution helpers for message fingerprints, so
 translations stay attached to their rewritten English messages.
@@ -67,6 +68,33 @@ REWRITES = {
     },
 }
 
+# Messages the Dual patch adds, with their Japanese: (file with the message,
+# message name, the Japanese .xtb of the .grd that includes that file, text).
+ADDED_JA = [
+    ('chrome/app/settings_strings.grdp', 'IDS_SETTINGS_HELIUM_DUAL_LAYOUT_DESCRIPTION',
+     'chrome/app/resources/generated_resources_ja.xtb',
+     'Dual のウィンドウでは、タブバーは外側に置かれ、ブラウザの操作部分は表示されたままになります。'),
+    # Closing tabs that have gone unused (Performance settings).
+    ('chrome/app/settings_strings.grdp', 'IDS_SETTINGS_HELIUM_DUAL_TAB_AUTO_CLOSE_LABEL',
+     'chrome/app/resources/generated_resources_ja.xtb',
+     '長時間使っていないタブを自動で閉じる'),
+    ('chrome/app/settings_strings.grdp', 'IDS_SETTINGS_HELIUM_DUAL_TAB_AUTO_CLOSE_DESCRIPTION',
+     'chrome/app/resources/generated_resources_ja.xtb',
+     '固定したタブと、各ウィンドウで表示中のタブは閉じません。閉じたタブは、履歴から開き直せます。'),
+    ('chrome/app/settings_strings.grdp', 'IDS_SETTINGS_HELIUM_DUAL_TAB_AUTO_CLOSE_HOURS_LABEL',
+     'chrome/app/resources/generated_resources_ja.xtb',
+     'タブを閉じるまでの、使っていない時間'),
+    ('chrome/app/settings_strings.grdp', 'IDS_SETTINGS_HELIUM_DUAL_TAB_AUTO_CLOSE_HOURS_UNIT',
+     'chrome/app/resources/generated_resources_ja.xtb',
+     '時間'),
+    ('chrome/app/settings_strings.grdp', 'IDS_SETTINGS_HELIUM_DUAL_TAB_AUTO_CLOSE_HOURS_ERROR',
+     'chrome/app/resources/generated_resources_ja.xtb',
+     '1〜8760 の整数を入力してください。'),
+    ('chrome/app/settings_strings.grdp', 'IDS_SETTINGS_HELIUM_DUAL_TAB_AUTO_CLOSE_KEEP_AUDIBLE_LABEL',
+     'chrome/app/resources/generated_resources_ja.xtb',
+     '音を出しているタブは閉じない'),
+]
+
 # Helium's branding destinations (helium-chromium resources/helium_resources.txt).
 BRANDING_FILES = {
     'product_logo.png': ['components/resources/default_100_percent/chromium/product_logo.png'],
@@ -103,6 +131,14 @@ PRODUCT_ICONS = [
     (32, 'chrome/app/theme/default_100_percent/chromium/product_logo_32.png'),
     (32, 'chrome/app/theme/default_200_percent/chromium/product_logo_16.png'),
     (64, 'chrome/app/theme/default_200_percent/chromium/product_logo_32.png'),
+    # Linux: the window and desktop icons (2026-10-23).
+    (24, 'chrome/app/theme/chromium/linux/product_logo_24.png'),
+    (48, 'chrome/app/theme/chromium/linux/product_logo_48.png'),
+    (64, 'chrome/app/theme/chromium/linux/product_logo_64.png'),
+    (128, 'chrome/app/theme/chromium/linux/product_logo_128.png'),
+    (256, 'chrome/app/theme/chromium/linux/product_logo_256.png'),
+    (16, 'chrome/app/theme/default_100_percent/chromium/linux/product_logo_16.png'),
+    (32, 'chrome/app/theme/default_100_percent/chromium/linux/product_logo_32.png'),
 ]
 
 
@@ -247,6 +283,28 @@ def substitute_xtb(path, fp_map, util, dry_run):
     return True
 
 
+def add_japanese(src, util, dry_run):
+    """Adds the ADDED_JA translations that are not there yet; returns how many."""
+    added = 0
+    for grd, name, xtb, japanese in ADDED_JA:
+        text = (src / grd).read_text(encoding='utf-8').replace('&#36;', '!!dollar-sign-literal!!')
+        message = next((m for m in xml.fromstring(text, util.get_parser()).iter('message')
+                        if m.get('name') == name), None)
+        if message is None:
+            raise SystemExit(f'{grd} has no {name}; was the Dual patch applied?')
+        fingerprint = util.compute_fp(message)
+        path = src / xtb
+        translations = path.read_text(encoding='utf-8')
+        if f'<translation id="{fingerprint}">' in translations:
+            continue
+        end = translations.rindex('</translationbundle>')
+        if not dry_run:
+            path.write_text(translations[:end] + f'<translation id="{fingerprint}">{japanese}</translation>\n' +
+                            translations[end:], encoding='utf-8')
+        added += 1
+    return added
+
+
 def copy_branding(src, branding, dry_run):
     count = 0
     for name, destinations in BRANDING_FILES.items():
@@ -298,6 +356,7 @@ def main():
     for _, kind in fp_map.values():
         kinds[kind] = kinds.get(kind, 0) + 1
     print(f'messages: {len(fp_map)} {kinds}; grd files: {grd_count}; xtb files: {xtb_count}')
+    print(f'Japanese added for Dual\'s own messages: {add_japanese(src, util, args.dry_run)}')
     print(f'branding files written: {copy_branding(src, args.branding, args.dry_run)}')
 
 

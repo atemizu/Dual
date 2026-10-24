@@ -1,30 +1,42 @@
 {
   "schema": 2,
-  "release": "Dual 6.2.4",
+  "release": "Dual 6.4.0",
   "helium_macos": {
     "url": "https://github.com/imputnet/helium-macos.git",
-    "tag": "0.17.2.2",
-    "commit": "359e3c5711a7c727499948bc9413aedabe3295ae"
+    "tag": "0.20.1.1",
+    "commit": "9aa975a56de8c2376d7c22f71da564b9426cda5f"
   },
   "helium_chromium": {
     "url": "https://github.com/imputnet/helium.git",
-    "commit": "2e0bc29d8236f3921aecbf391d4f6bb3bf77086e"
+    "commit": "f29a25968e483f8bb85e47829ccd487bbe229199"
   },
   "chromium": {
-    "version": "153.0.8010.52",
-    "archive": "chromium-153.0.8010.52-lite.tar.xz",
-    "url": "https://commondatastorage.googleapis.com/chromium-browser-official/chromium-153.0.8010.52-lite.tar.xz",
-    "sha256": "ed6fcbf913f12f97c619616b35fa8b56f6e61c53bdbf00cbb0e7ef839a39844a",
-    "bytes": 1878365464
+    "version": "156.0.8078.47",
+    "archives": [
+      {
+        "archive": "chromium-156.0.8078.47-base.tar.zst",
+        "url": "https://tarballs.imput.net/chromium-156.0.8078.47/chromium-156.0.8078.47-base.tar.zst",
+        "hashes": "https://github.com/imputnet/chromium-tarballs/releases/download/chromium-156.0.8078.47/chromium-156.0.8078.47-base.tar.zst.hashes",
+        "sha256": "d086d3b8c01b6d192bb54383459979641d2fa57e7c2599b9cb1f70b96c6a10be",
+        "bytes": 1983006019
+      },
+      {
+        "archive": "chromium-156.0.8078.47-mac-arm64.tar.zst",
+        "url": "https://tarballs.imput.net/chromium-156.0.8078.47/chromium-156.0.8078.47-mac-arm64.tar.zst",
+        "hashes": "https://github.com/imputnet/chromium-tarballs/releases/download/chromium-156.0.8078.47/chromium-156.0.8078.47-mac-arm64.tar.zst.hashes",
+        "sha256": "22c35bf5057593e945a9beaaaadb6f5bef00d5535e5d4df5dc3d532b2d6ce08c",
+        "bytes": 1390257137
+      }
+    ]
   },
   "local_patch": {
     "path": "helium-dual-window.patch",
-    "sha256": "3e2d68460fddd150f2f8630f36bcb9082db5f5f428db874421040782a9627c83",
-    "files": 95,
-    "applies_to": "Helium 0.17.2.2 source after Helium's own prepare steps (patches, domain and name substitution, translations)"
+    "sha256": "e809c02fd3cbf6c07711f9eaa7ef6306769c68eb0c4378c4576967725e7752ec",
+    "files": 104,
+    "applies_to": "Helium 0.20.1.1 source after Helium's own prepare steps (patches, domain and name substitution, translations)"
   },
   "build": {
-    "config": "Helium release configure_build: flags.gn + flags.macos.gn (is_official_build=true), target_cpu=arm64, no PGO",
+    "config": "Helium release configure_build: flags.gn + flags.macos.gn (is_official_build=true), target_cpu=arm64, PGO profile as Helium 0.20 configures it (chrome_pgo_phase=2)",
     "args": "args.gn",
     "xcode": "26.6 (17F113)",
     "target": "macOS arm64"
@@ -32,8 +44,24 @@
   "packaging": "packaging/package_release.py (ad-hoc signed; not Developer ID signed or notarized)",
   "rebrand": {
     "script": "dual_rebrand.py",
-    "sha256": "5df61314f1a6ef948cd66b58bdb24554ec00c541c5d6dcb53561fce552cde61a",
+    "sha256": "1bfcbe8252eaf4f613efc1b15c79906799e2c7c631f571e1db0a9266c9a30b4d",
     "branding": "branding/",
     "applies_after": "helium-dual-window.patch"
+  },
+  "translate_host": {
+    "source": "translate-host/",
+    "llama_cpp": {
+      "url": "https://github.com/ggml-org/llama.cpp.git",
+      "tag": "b11846",
+      "commit": "1a24df163920a4744a95373d178d790b72a9bb2f"
+    },
+    "model_downloaded_on_first_use": {
+      "name": "Gemma 4 E4B (instruction-tuned), Q4_K_M GGUF by Unsloth",
+      "url": "https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF/resolve/bfc15c382204943c3a8fff0c750b94ae2364d7a3/gemma-4-E4B-it-Q4_K_M.gguf",
+      "sha256": "85a896a047553e842f25297ee5b031d64ff30147d9c4af17b1e4b394cd1fab87",
+      "bytes": 4977171584,
+      "license": "Apache-2.0",
+      "distributed_with_dual": false
+    }
   }
 }

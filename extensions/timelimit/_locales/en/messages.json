@@ -1,0 +1,8 @@
+{
+  "name": {
+    "message": "Dual Site Time Limit"
+  },
+  "description": {
+    "message": "Limits how long you can keep looking at a site in one go. A limit stays until you remove it. Bundled with Dual; can be turned off."
+  }
+}

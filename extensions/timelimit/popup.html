@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
+<title>Site Time Limit</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<header>
+  <img src="icons/48.png" alt="" width="24" height="24">
+  <h1 id="title"></h1>
+</header>
+
+<p id="nowhere" class="hint" hidden></p>
+
+<div id="here" hidden>
+  <p id="site" class="site"></p>
+  <p id="rule" class="status"></p>
+  <p id="now" class="hint"></p>
+  <div id="presets" class="presets"></div>
+  <form id="custom" class="row">
+    <label for="minutes" id="custom-label"></label>
+    <span class="field">
+      <input id="minutes" type="number" min="1" step="1" inputmode="numeric">
+      <span id="unit"></span>
+      <button id="set" type="submit"></button>
+    </span>
+  </form>
+  <p id="range" class="hint error" hidden></p>
+  <button id="remove" class="quiet wide" hidden></button>
+</div>
+
+<section>
+  <div class="row">
+    <label for="rest" id="rest-label"></label>
+    <select id="rest"></select>
+  </div>
+  <p id="rest-hint" class="hint"></p>
+</section>
+
+<section>
+  <h2 id="list-heading"></h2>
+  <p id="list-none" class="hint"></p>
+  <ul id="list"></ul>
+  <p id="list-note" class="hint"></p>
+</section>
+<script type="module" src="popup.js"></script>
+</body>
+</html>

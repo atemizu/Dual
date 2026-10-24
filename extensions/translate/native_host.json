@@ -1,0 +1,5 @@
+{
+  "name": "dual.translate",
+  "description": "Dual Page Translate: runs the translation model on this computer",
+  "program": "dual-translate-host"
+}

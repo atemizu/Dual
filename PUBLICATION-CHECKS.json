@@ -1,20 +1,31 @@
 {
   "status": "PASS",
-  "date": "2026-10-05",
-  "release": "Dual 6.2.4",
+  "date": "2026-10-25",
+  "release": "Dual 6.4.0",
   "source_only": false,
-  "binary": "Dual-6.2.4-macOS-arm64.dmg (ad-hoc signed), sha256 d382d43c1ae14faca93741687db64597597743433aec58a8889d7795c20545d0",
-  "patch_files": 95,
-  "patch_applies_to_prepared_helium_0.17.2.2": true,
-  "reproduces_build_sources": "the 95 patch files were compared with the build tree: 37 identical, 57 differ only in publication notice comment lines, 1 (chrome/app/settings_strings.grdp) is the string file dual_rebrand.py rewrites; dual_rebrand.py and branding/ are unchanged since 6.2.3, whose full check covered the rebrand output",
-  "modification_notices": "files changed in 6.2.4 carry dated notices, including the three files newly modified (render_widget_host_view_cocoa.mm, helium_crash_reporting.cc, crash_reporter_client.cc)",
+  "binary": "Dual-6.4.0-macOS-arm64.dmg (ad-hoc signed), sha256 69d8de25612f6ec88ed65d594629ad5b6c96e33250d74dd89191ae260fb7c931",
+  "base": "Helium 0.20.1.1 (helium-macos 9aa975a56de8c2376d7c22f71da564b9426cda5f, helium-chromium f29a25968e483f8bb85e47829ccd487bbe229199), Chromium 156.0.8078.47",
+  "patch_files": 104,
+  "patch_sha256": "e809c02fd3cbf6c07711f9eaa7ef6306769c68eb0c4378c4576967725e7752ec",
+  "patch_applies_to_prepared_helium_0.20.1.1": true,
+  "reproduces_build_sources": "tools/stage_from_patch.py applied the patch to the untouched prepared Helium 0.20.1.1 without a failure and gave the 104 published files (84 changed, 20 new); tools/check_tree.py compared the whole build tree with the untouched tree: the differences are the 104 patch files, each identical to the published copy, the 643 message, translation and logo files dual_rebrand.py writes, and five relative links that equal Helium's own; no temporary trace code is left in them",
+  "modification_notices": "every patch file carries a Dual notice in its first lines (settings_strings.grdp: comments beside the added messages); the four files Helium 0.20 moved Dual's changes into, and launch_context.cc and frame/BUILD.gn, got theirs on 2026-10-25",
   "in_app_helium_logos": "none (unchanged since 6.2.3)",
   "upstream_license_copies_byte_identical": true,
   "terms_rechecked": [
-    "https://helium.computer/terms (2026-07-08, unchanged)",
-    "https://helium.computer/privacy (2026-07-16, unchanged)",
-    "https://helium.computer/brand"
+    "https://helium.computer/terms (2026-07-08, unchanged when read again on 2026-10-25)",
+    "https://helium.computer/privacy (2026-07-16, unchanged when read again on 2026-10-25)",
+    "https://helium.computer/brand (read again on 2026-10-25)"
   ],
-  "crash_reporting": "Dual 6.2.4 sends no crash reports: the crash handler gets no upload URL and uploads are treated as disabled (no prompt, setting fixed to Disabled); checked on the released DMG's app",
-  "dmg_app_matches_tested_build": "framework UUID 4C4C447E-5555-3144-A152-4D591BB40848 in both the DMG app and the locally tested build"
+  "crash_reporting": "unchanged from 6.2.4 (no upload URL, setting fixed to Disabled); the two files still merge onto Helium 0.20.1.1 without conflict; not re-tested on this build",
+  "dmg_app_matches_tested_build": "framework UUID 4C4C447A-5555-3144-A1E5-ACA78EEDD4FE in the DMG app and the kept dSYM; the translation program in the DMG equals the one built from translate-host/ and tested",
+  "automated_checks_from_dmg": "18 suites, about 420 checks, run on the app of the DMG on 2026-10-25: 15 passed as they were; bundled extensions (20) and languages (16) passed after the checks were updated for the third extension; frameless mode, first press failed 3 of 30 once and passed when run again; divider, fast pages: one capture of 32 in some runs shows the page ahead of its pane frame (also on the build before the translation work, see VALIDATION.md)",
+  "other_checks_on_the_same_binary": "a profile made by the published 6.2.4 opened by this build (10 checks); helium_dual_state_smoke builds and passes",
+  "page_translation": "test pages (26 checks, including restoring the page exactly), six real sites and two Wikipedia articles (links kept, original restored), the first download of the model through the popup (131 s, SHA-256 checked), real clicks on the toolbar button and the popup, the right-click menu and a keyboard shortcut (10 checks, DMG app); the model is downloaded from a fixed Hugging Face revision and is not distributed with Dual (Apache-2.0)",
+  "translation_program_licenses": "llama.cpp/ggml and JSON for Modern C++ (MIT) notices ship next to the program in the app and in translate-host/licenses/",
+  "frameless_mode": "a press on the pane that is not in use no longer brings its toolbar in under the pointer (29 checks; four of them fail on the build before the fix); a pane that goes out of use no longer keeps its toolbar in view",
+  "closing_unused_tabs": "a setting of the browser (Settings > Performance), off by default; the former bundled extension for it is no longer part of the release",
+  "divider": "no blank area in any of 96 stills (run again on 2026-10-10) and 2,579 video frames (2026-10-06 candidate; the divider code has not changed since) with fast pages and pages taking 0.4 s per resize; known limit: about one frame in 4,300 steps showed new pane frames with old contents (cause not found); pages over 1.5 s fall back to the old behaviour",
+  "bundled_extensions": "extensions/report, extensions/timelimit and extensions/translate are copied into the app by packaging/package_release.py, with the translation program built from translate-host/ (packaging/bundle_extensions.py --hosts); the copies in the DMG app equal the repository copies except report/build.json, which carries the release number; original code and icons, no third-party material; only translate's program contacts a server (Hugging Face, to download the model when the user clicks Download)",
+  "unit_tests": "removed from the patch: they cannot be built from the lite Chromium archive the documented build uses; helium_dual_state_smoke builds and passes"
 }

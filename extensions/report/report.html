@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Report</title>
+<link rel="icon" href="icons/32.png">
+<link rel="stylesheet" href="report.css">
+</head>
+<body>
+<main>
+  <header>
+    <img src="icons/128.png" alt="" width="40" height="40">
+    <div>
+      <h1 id="title"></h1>
+      <p id="lead"></p>
+    </div>
+  </header>
+  <p id="restored" class="note" hidden></p>
+
+  <section>
+    <h2 id="summary-heading"></h2>
+    <label for="subject"><span id="subject-label"></span><span class="required" id="subject-required"></span></label>
+    <input id="subject" type="text" maxlength="100" autocomplete="off">
+    <p id="subject-missing" class="error" hidden></p>
+
+    <p class="label" id="kind-label"></p>
+    <div id="kind" class="chips" role="radiogroup" aria-labelledby="kind-label"></div>
+
+    <p class="label" id="where-label"></p>
+    <div id="where" class="chips" role="group" aria-labelledby="where-label"></div>
+  </section>
+
+  <section>
+    <h2 id="detail-heading"></h2>
+    <label for="what"><span id="what-label"></span><span class="required" id="what-required"></span></label>
+    <textarea id="what" rows="4"></textarea>
+    <p id="what-missing" class="error" hidden></p>
+
+    <label for="steps" id="steps-label"></label>
+    <textarea id="steps" rows="4"></textarea>
+
+    <label for="expected" id="expected-label"></label>
+    <textarea id="expected" rows="2"></textarea>
+  </section>
+
+  <section>
+    <h2 id="situation-heading"></h2>
+    <div class="pair">
+      <div>
+        <label for="often" id="often-label"></label>
+        <select id="often"></select>
+      </div>
+      <div>
+        <label for="since" id="since-label"></label>
+        <select id="since"></select>
+      </div>
+    </div>
+
+    <p class="label" id="panes-label"></p>
+    <div id="panes" class="chips" role="radiogroup" aria-labelledby="panes-label"></div>
+
+    <p class="label" id="zen-label"></p>
+    <div id="zen" class="chips" role="radiogroup" aria-labelledby="zen-label"></div>
+
+    <label for="extra" id="extra-label"></label>
+    <textarea id="extra" rows="2"></textarea>
+  </section>
+
+  <section>
+    <h2 id="setup-heading"></h2>
+    <label class="check">
+      <input type="checkbox" id="with-setup" checked>
+      <span id="with-setup-label"></span>
+    </label>
+    <ul id="setup"></ul>
+  </section>
+
+  <section>
+    <h2 id="preview-heading"></h2>
+    <p id="preview-title" class="preview-title"></p>
+    <pre id="preview"></pre>
+
+    <div class="buttons">
+      <button id="send" class="primary"></button>
+      <button id="search"></button>
+      <button id="copy"></button>
+      <span class="spacer"></span>
+      <button id="clear" class="quiet"></button>
+    </div>
+    <p id="result" class="note" hidden></p>
+    <p id="notice" class="hint"></p>
+    <p id="picture" class="hint"></p>
+  </section>
+</main>
+<script src="report.js"></script>
+</body>
+</html>

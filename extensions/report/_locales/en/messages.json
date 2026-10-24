@@ -1,0 +1,8 @@
+{
+  "name": {
+    "message": "Dual Problem Report"
+  },
+  "description": {
+    "message": "Drafts a report of a problem in Dual, with details of your setup, to file on GitHub. Nothing is sent until you press the button. Bundled with Dual; you can turn it off or remove it."
+  }
+}

@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
-# Dual: unofficial modifications of Helium, 2026-09-08 to 2026-10-05 (Dual 6.2.4).
+# Dual: unofficial modifications of Helium, 2026-09-08 to 2026-10-06 (Dual 6.3.0).
 # Modifications Copyright 2026 Dual contributors; GPL-3.0-only.
 """Package a built Dual app as the public release DMG.
 
   python3 packaging/package_release.py \
       --built "/path/to/src/out/Default/Helium Dual.app" \
-      --icon Dual-6.icns --version 6.2.4 --out /path/to/release
+      --icon Dual-6.icns --version 6.4.0 --out /path/to/release \
+      --hosts /path/to/hosts
 
 Copies the built app, sets the public name and bundle identifier (kept equal to
-Dual 5 so an existing profile carries over), applies the icon, ad-hoc signs it
-and writes Dual-<version>-macOS-arm64.dmg with a SHA-256 file. The input build
-is not modified.
+Dual 5 so an existing profile carries over), applies the icon, puts the
+extensions in extensions/ into the app, with the programs some of them need
+(built beforehand into --hosts; see bundle_extensions.py and translate-host/),
+ad-hoc signs it and writes Dual-<version>-macOS-arm64.dmg with a SHA-256 file.
+The input build is not modified.
 """
 
 import argparse
@@ -18,7 +21,11 @@ import hashlib
 import plistlib
 import shutil
 import subprocess
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from bundle_extensions import bundle  # noqa: E402
 
 BUNDLE_ID = 'local.heliumdual.browser'
 
@@ -29,6 +36,10 @@ def main() -> None:
     parser.add_argument('--icon', required=True, type=Path)
     parser.add_argument('--version', required=True)
     parser.add_argument('--out', required=True, type=Path)
+    parser.add_argument('--extensions', type=Path,
+                        default=Path(__file__).resolve().parent.parent / 'extensions')
+    parser.add_argument('--hosts', type=Path,
+                        help='built native hosts (translate-host/build_mac.sh)')
     args = parser.parse_args()
 
     name = f'Dual {args.version}'
@@ -47,6 +58,8 @@ def main() -> None:
     info.pop('CrProductDirName', None)
     info_path.write_bytes(plistlib.dumps(info))
     shutil.copyfile(args.icon, app / 'Contents/Resources/app.icns')
+    # Before signing: the signature covers the bundled extensions too.
+    print('bundled extensions:', bundle(args.extensions, app, args.version, hosts=args.hosts))
 
     subprocess.run(['/usr/bin/codesign', '--force', '--deep', '--sign', '-',
                     '--timestamp=none', '--identifier', BUNDLE_ID, str(app)],
