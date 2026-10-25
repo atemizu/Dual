@@ -1,6 +1,6 @@
 # 規約・公開条件の確認メモ
 
-確認日：2026-09-09、再確認 2026-09-29（Dual 6.2.2 のソースとアプリ配布）、2026-10-04（Dual 6.2.3）、2026-10-05（Dual 6.2.4、同日 Dual 6.3.0）、2026-10-06（Dual 6.3.0 の内容追加と Helium 0.18.3.1 への移行）、2026-10-10（Dual 6.3.0）、2026-10-25（Dual 6.4.0：Helium 0.20.1.1 への移行とページ翻訳）。以下は公開準備に用いた文書の読み取りと対応内容であり、個別事情を含む法的適合性の保証ではありません。
+確認日：2026-09-09、再確認 2026-09-29（Dual 6.2.2 のソースとアプリ配布）、2026-10-04（Dual 6.2.3）、2026-10-05（Dual 6.2.4、同日 Dual 6.3.0）、2026-10-06（Dual 6.3.0 の内容追加と Helium 0.18.3.1 への移行）、2026-10-10（Dual 6.3.0）、2026-10-25（Dual 6.4.0：Helium 0.20.1.1 への移行とページ翻訳。同日、Dual 6.4.0 for Linux のプレビュー版）。以下は公開準備に用いた文書の読み取りと対応内容であり、個別事情を含む法的適合性の保証ではありません。
 
 | 一次資料 | 確認した点 | 公開一式の対応 |
 | --- | --- | --- |
@@ -149,3 +149,16 @@ Dual 6.3.0 は公開しませんでした。6.4.0 は、6.3.0 の内容に次を
 - 拡張機能の権限は、ボタン・メニュー・ショートカットを使ったタブにだけ入る activeTab と scripting、右クリックのメニュー（contextMenus）、翻訳プログラムとの通信（nativeMessaging）。保存するデータはない（モデルのファイルを除く）。
 - ブラウザ本体の変更は、同梱のプログラムをアプリの中から探す1か所だけで、そのプログラムを起動できるのは翻訳の拡張機能だけ（マニフェストの `allowed_origins`）。
 - アイコンは Dual の協力者による仮のドット絵（第三者の素材なし）。
+
+## 2026-10-25 再確認（Dual 6.4.0 for Linux、プレビュー版）
+
+Linux 版（x86_64・arm64 の tar.xz）を、リリース `v6.4.0-linux-preview` として配布します。macOS 版 6.4.0 と同じ変更を、Helium の Linux 版（helium-linux 0.20.1.1）に当てたものです。
+
+- GPLv3 第6節の対応ソース：配布物と同じタグのこのリポジトリに、Linux 用のパッチ（`linux/dual-0.20.1.1-linux.patch`、`linux/linux-identity.patch`）、固定した上流（`source-lock.json` の `linux`）、ビルド手順（`BUILDING-linux.md`）、arm64 の機械でビルドの道具を用意するスクリプト（`linux/toolchain-arm64.sh`）、パッチを当てるスクリプト（`linux/apply.sh`）、配布物を作るスクリプト（`linux/package.sh`）、名称とロゴの置き換え（`dual_rebrand.py`、`branding/`）、同梱の拡張機能と翻訳プログラムのソースを置いた。配布物の `README.txt` に、ソースの場所（そのタグ）とライセンスを書いた。
+- 配布物には GPL-3.0 の全文（`LICENSE`）を入れ、アプリ内の helium://credits（上流の帰属とライセンスの表示）は元のまま残している。翻訳プログラムが静的にリンクする llama.cpp・ggml と JSON for Modern C++ の MIT License の表示は、プログラムの隣（`dual-native-hosts/dual-translate-host-licenses/`）に入れた。ダウンロードに使う libcurl は、利用者のシステムのものを実行時に読み込み、配布物には含めない。
+- helium-linux 0.20.1.1 の `LICENSE`（GPL-3.0）と `LICENSE.ungoogled_chromium`（BSD-3-Clause）を、`licenses/helium-linux-LICENSE.txt`、`licenses/helium-linux-LICENSE.ungoogled_chromium.txt` に変更せずに写した。
+- `linux/fix-compiling-on-arm64.patch` は helium-linux 0.18.3.1（コミット 0e4e30b0）のものを変更せずに写した。arm64 の機械でビルドするための、ビルドの道具だけの変更で、プログラムには入らない。出所と許諾を `NOTICE.md` に書いた。
+- 名称・ロゴ：アプリ内の名称とロゴは macOS 版と同じく Dual のもの（Helium のロゴは使っていない）。アプリケーション メニューの名前は「Dual」、アイコンは Dual の画像、設定フォルダ・デスクトップ エントリ・アイコン名は `dual-browser` で、Helium のもの（`net.imput.helium`、`helium.desktop`）と分けた。利用者が Helium と取り違えないため、また同じ機械の Helium の設定を変えないため。
+- ビルド設定は helium-linux の構成手順のもの（`flags.gn` と `flags.linux.gn`）をそのまま使い、Dual では変えていない（PGO だけは使っていない）。
+- Helium のプライバシーポリシーが Dual に適用されないことは README に、Dual が imput LLC・Helium の公式のものではないことは README と配布物の `README.txt` に書いた。
+

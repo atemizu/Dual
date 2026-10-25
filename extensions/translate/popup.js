@@ -100,6 +100,12 @@ async function askPage(message) {
   render();
 }
 
+// What the page in the tab is written in, as it is now.
+async function detectLanguage() {
+  const reply = await chrome.runtime.sendMessage({type: 'pageLanguage', tabId});
+  pageLanguage = reply?.language || null;
+}
+
 async function translate(target) {
   const reply = await chrome.runtime.sendMessage({type: 'startInTab', tabId, target});
   if (reply?.ok) await askPage({type: 'state'});
@@ -127,13 +133,17 @@ async function main() {
   $('to-en').addEventListener('click', () => translate('en'));
   $('stop').addEventListener('click', () => askPage({type: 'stop'}));
   $('resume').addEventListener('click', () => translate(pageState.target));
-  $('restore').addEventListener('click', () => askPage({type: 'restore'}));
+  $('restore').addEventListener('click', async () => {
+    await askPage({type: 'restore'});
+    // The page is in its own language again (the popup was opened on the translation).
+    await detectLanguage();
+    render();
+  });
 
   const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
   tabId = tab?.id ?? null;
   if (tabId !== null) {
-    const reply = await chrome.runtime.sendMessage({type: 'pageLanguage', tabId});
-    pageLanguage = reply?.language || null;
+    await detectLanguage();
     await askPage({type: 'state'});
     // Follow the translation while the popup is open.
     setInterval(() => {

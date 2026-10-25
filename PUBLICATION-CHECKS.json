@@ -27,5 +27,32 @@
   "closing_unused_tabs": "a setting of the browser (Settings > Performance), off by default; the former bundled extension for it is no longer part of the release",
   "divider": "no blank area in any of 96 stills (run again on 2026-10-10) and 2,579 video frames (2026-10-06 candidate; the divider code has not changed since) with fast pages and pages taking 0.4 s per resize; known limit: about one frame in 4,300 steps showed new pane frames with old contents (cause not found); pages over 1.5 s fall back to the old behaviour",
   "bundled_extensions": "extensions/report, extensions/timelimit and extensions/translate are copied into the app by packaging/package_release.py, with the translation program built from translate-host/ (packaging/bundle_extensions.py --hosts); the copies in the DMG app equal the repository copies except report/build.json, which carries the release number; original code and icons, no third-party material; only translate's program contacts a server (Hugging Face, to download the model when the user clicks Download)",
-  "unit_tests": "removed from the patch: they cannot be built from the lite Chromium archive the documented build uses; helium_dual_state_smoke builds and passes"
+  "unit_tests": "removed from the patch: they cannot be built from the lite Chromium archive the documented build uses; helium_dual_state_smoke builds and passes",
+  "patch_sha256_note": "patch_sha256 is the patch the macOS 6.4.0 DMG was built from (tag v6.4.0). From v6.4.0-linux-preview the repository's helium-dual-window.patch (sha256 04b4ad85162c3c32432556274e50197eff3cd088e3a28eb832a04e83725bb07b) differs from it only in three files that only Linux builds (helium_dual_browser_linux.cc, browser_native_widget_dual_pane_linux.{h,cc}); extensions/translate is 1.0.1 there (the DMG has 1.0.0)",
+  "linux_preview": {
+    "status": "PASS",
+    "date": "2026-10-25",
+    "release": "Dual 6.4.0 for Linux (tag v6.4.0-linux-preview, a preview)",
+    "binaries": {
+      "dual-browser-6.4.0-linux-preview-arm64.tar.xz": "4f6dde74b237045ce27e0b934cea57cd605373ae59f318fa8ad5b2883fd10175",
+      "dual-browser-6.4.0-linux-preview-x86_64.tar.xz": "3963feb05d9c50dd7c438e949741828dc0e243df356bfe064239a661f64fadcb"
+    },
+    "base": "helium-linux 0.20.1.1 (473c0f72d7db2e8492f0fa975b8544bc719bb027), helium-chromium f29a25968e483f8bb85e47829ccd487bbe229199, Chromium 156.0.8078.47",
+    "patches": {
+      "linux/dual-0.20.1.1-linux.patch": "2c9dbc35f00c3b862a93e6f68a8e5c13fae15b122d6e2c64babc4ef178353237",
+      "linux/linux-identity.patch": "56b7f18f5b84c3218433e6e3afab7f176432c44a651dc54edb44741bb39d8c9f"
+    },
+    "reproduces_build_sources": "the 93 files the two Linux patches touch, made again from the untouched originals and the published patches, equal the build tree except chrome/app/settings_strings.grdp, which differs only by dual_rebrand.py's renaming",
+    "package_matches_sources": "the bundled extensions equal extensions/ (except report/build.json, which carries the release name); the translation programs are the ones built from translate-host/ (llama.cpp b11846) and their notices equal translate-host/licenses/; LICENSE is the GPL-3.0 text",
+    "glibc": "browser 2.25 or later, translation program 2.17 or later",
+    "checks": "with the sandbox on (chrome://sandbox: namespace and seccomp-BPF): X11 (Xvfb, xfwm4) and Wayland (headless sway) on Debian 13 arm64 in a VM; the x86_64 build in an emulated Debian 13 amd64 guest; opening the right side, the divider to both limits, the window's minimum size, hiding and restoring each side, page translation of the test page (links kept, original restored, the popup judges the language again), install-for-me.sh and desktop-file-validate",
+    "fixed_before_release": [
+      "divider limit from each pane's real minimum width",
+      "the window's minimum size given to the desktop",
+      "a hidden pane narrowed to its strip",
+      "the translate popup judges the page language again after showing the original"
+    ],
+    "not_checked": "real computers, GNOME and KDE, AppArmor on Ubuntu, translating a page with the x86_64 build (its program was checked up to download, cancel and resume)",
+    "licenses": "helium-linux LICENSE and LICENSE.ungoogled_chromium copied verbatim to licenses/; linux/fix-compiling-on-arm64.patch copied unchanged from helium-linux 0.18.3.1 (build tools only)"
+  }
 }

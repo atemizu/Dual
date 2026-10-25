@@ -8,6 +8,7 @@ This is an independent, unofficial derivative. It is not affiliated with imput L
 
 - Helium: GPL-3.0 for its original code and modifications; `licenses/Helium-GPL-3.0.txt`.
 - Helium macOS: the pinned repository's original `LICENSE` and `LICENSE.ungoogled_chromium` are copied verbatim to `licenses/helium-macos-LICENSE.txt` and `licenses/helium-macos-LICENSE.ungoogled_chromium.txt`.
+- Helium Linux (for Dual for Linux): the pinned repository's (helium-linux 0.20.1.1) original `LICENSE` and `LICENSE.ungoogled_chromium` are copied verbatim to `licenses/helium-linux-LICENSE.txt` and `licenses/helium-linux-LICENSE.ungoogled_chromium.txt`.
 - ungoogled-chromium: original BSD 3-Clause notice in `licenses/ungoogled-chromium.txt`.
 - Chromium: original notice in `licenses/Chromium-LICENSE.txt`; individual files and dependencies retain their own notices/licenses.
 
@@ -33,6 +34,12 @@ The covered modified work is conveyed under GPLv3 as a whole, subject to retaine
 - JSON for Modern C++ (vendored in llama.cpp) — Copyright (c) 2013-2025 Niels Lohmann, MIT License.
 
 The translation model, Gemma 4 E4B by Google DeepMind in the 4-bit GGUF version made by Unsloth (`unsloth/gemma-4-E4B-it-GGUF`), is not part of Dual or of this repository. The program downloads it from Hugging Face when the user asks, and the model is licensed under the Apache License 2.0 by its authors.
+
+## Linux
+
+`linux/` holds what Dual for Linux is built with. `linux/fix-compiling-on-arm64.patch` is copied unchanged from imputnet/helium-linux 0.18.3.1 (commit `0e4e30b0a7c612182e255790fe7eaa4ccfcab15f`, `patches/ungoogled-chromium/portablelinux/fix-compiling-on-arm64.patch`), under that repository's licenses (above); it changes only build tools, for building on arm64 machines. The other files in `linux/` are original works of the Dual contributors, released under GPL-3.0-only; `linux/dual-0.20.1.1-linux.patch` is made from the same changes as `helium-dual-window.patch`.
+
+The Linux download contains `LICENSE` (GPL-3.0), and the translation program's notices in `dual-native-hosts/dual-translate-host-licenses/`. The program keeps the upstream credits and license view at helium://credits/.
 
 ## Tools
 

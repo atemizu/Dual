@@ -27,6 +27,19 @@ xattr -dr com.apple.quarantine "/Applications/Dual 6.4.0.app"
 
 Dual 6.4.0 uses the same bundle identifier as Dual 5 and earlier Dual 6 releases, so an existing profile carries over. Quit the older Dual before opening Dual 6.4.0.
 
+### Linux (preview)
+
+[x86_64](https://github.com/atemizu/Dual/releases/download/v6.4.0-linux-preview/dual-browser-6.4.0-linux-preview-x86_64.tar.xz) · [arm64](https://github.com/atemizu/Dual/releases/download/v6.4.0-linux-preview/dual-browser-6.4.0-linux-preview-arm64.tar.xz) — release [v6.4.0-linux-preview](https://github.com/atemizu/Dual/releases/tag/v6.4.0-linux-preview)
+
+Dual for Linux works like Dual for Mac: two independent browsers, each with its own tab bar, side by side in one window, with the same bundled extensions. It is a preview: it has been tried less than the Mac version (see [Validation](VALIDATION.md#linux-preview)).
+
+- Unpack it anywhere and run `./dual-browser` in the folder. `./install-for-me.sh` adds Dual to your application menu (no administrator rights needed).
+- For 64-bit Linux with a desktop (X11 or Wayland) and glibc 2.25 or later.
+- The profile is `~/.config/dual-browser`, apart from Helium's, so Dual and Helium can be installed side by side.
+- If Dual does not start and says the sandbox could not be set up (Ubuntu 23.10 and later restrict it with AppArmor), follow the steps in `README.txt` in the folder.
+- Page translation runs on the processor, not the GPU, so it is several times slower than on a Mac. The model is kept in `~/.local/share/dual-translation`; downloading it uses the system's libcurl (`libcurl.so.4`, which most desktops have).
+- Not yet tried: GNOME and KDE on a real computer (it was tried with Xfce's window manager and with sway), and the x86_64 version on a real computer (it was tried in an emulated x86_64 machine).
+
 ## What's new in 6.4.0
 
 - **Page translation between Japanese and English, on your Mac** (the button with two speech bubbles). Translates the page you are looking at in place, with a language model that runs on the Mac itself: the page's text is never sent anywhere. The first time, the popup offers to download the model (5.0 GB, once). Links and formatting stay, what is on screen comes first and the rest follows as you scroll, and "Show original" puts the page back exactly as it was. See [Page translation](#page-translation).
@@ -59,9 +72,9 @@ Details: [MODIFICATIONS.md](MODIFICATIONS.md).
 The former development name was Helium Dual. Some legacy names remain in storage paths and internal identifiers (such as `helium://` pages) for compatibility. Inside the app, Dual uses its own name and logo; text about Helium's online services and the credits keep Helium's name. Dual is an unofficial project and is not affiliated with imput LLC or the Helium project.
 
 - Based on Helium 0.20.1.1 / Chromium 156.0.8078.47
-- Target platform: macOS arm64 (Apple Silicon)
+- Target platform: macOS arm64 (Apple Silicon); Linux x86_64 and arm64 as a preview
 - Modified files: [MODIFICATIONS.md](MODIFICATIONS.md), [modifications.json](modifications.json)
-- Build instructions: [BUILDING.md](BUILDING.md); moving to a newer Helium: [UPDATING.md](UPDATING.md)
+- Build instructions: [BUILDING.md](BUILDING.md), for Linux [BUILDING-linux.md](BUILDING-linux.md); moving to a newer Helium: [UPDATING.md](UPDATING.md)
 - Validation scope: [VALIDATION.md](VALIDATION.md)
 
 ## Helium services
@@ -118,7 +131,7 @@ Each gets a toolbar button in a profile that receives it for the first time. You
 
 ## Source and license
 
-The canonical change set is [helium-dual-window.patch](helium-dual-window.patch), made against Helium 0.20.1.1 after Helium's own source preparation, followed by [dual_rebrand.py](dual_rebrand.py), which puts Dual's name and the logos in [branding/](branding/) in place of Helium's. The pinned upstream commits and hashes are recorded in [source-lock.json](source-lock.json). The bundled extensions in [extensions/](extensions/), and the translation program built from [translate-host/](translate-host/), are copied into the app by [packaging/package_release.py](packaging/package_release.py). The scripts in [tools/](tools/) carry the change set over to a newer Helium ([UPDATING.md](UPDATING.md)). The change set also contains a port of Dual to Linux, which is not released yet.
+The canonical change set is [helium-dual-window.patch](helium-dual-window.patch), made against Helium 0.20.1.1 after Helium's own source preparation, followed by [dual_rebrand.py](dual_rebrand.py), which puts Dual's name and the logos in [branding/](branding/) in place of Helium's. The pinned upstream commits and hashes are recorded in [source-lock.json](source-lock.json). The bundled extensions in [extensions/](extensions/), and the translation program built from [translate-host/](translate-host/), are copied into the app by [packaging/package_release.py](packaging/package_release.py). The scripts in [tools/](tools/) carry the change set over to a newer Helium ([UPDATING.md](UPDATING.md)). The change set also contains Dual's port to Linux. Dual for Linux is built from a Helium Linux 0.20.1.1 source with the same changes, made into a patch for Linux, and the files in [linux/](linux/) ([BUILDING-linux.md](BUILDING-linux.md)).
 
 The original code and modifications are released under the GNU General Public License version 3 (GPL-3.0-only). License text and third-party notices are included in [LICENSE](LICENSE), [licenses/](licenses/), and [NOTICE.md](NOTICE.md). The distributed app retains the upstream credits and license view at helium://credits/.
 

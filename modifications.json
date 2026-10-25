@@ -172,7 +172,7 @@
  {
   "path": "chrome/browser/ui/helium/helium_dual_browser_linux.cc",
   "new_file": true,
-  "published_sha256": "b0606642628a5961f58ac3a672d5cfe643ac01b67a2d91db2eec95fca9a2a9cf"
+  "published_sha256": "b6543e26e934ba2f7ecbc64548c38dcf7ac67ec7e54a562a33ba5ba859d7861d"
  },
  {
   "path": "chrome/browser/ui/helium/helium_dual_browser_mac.mm",
@@ -317,12 +317,12 @@
  {
   "path": "chrome/browser/ui/views/frame/browser_native_widget_dual_pane_linux.cc",
   "new_file": true,
-  "published_sha256": "ba66f9eb5877a413fa3e1baa63af8b7105ed5f03b5e9c9682bed9e29948075d6"
+  "published_sha256": "1acc2920e61b82b0dc06c4e6f23030747230131ac41ba00af4309233db855276"
  },
  {
   "path": "chrome/browser/ui/views/frame/browser_native_widget_dual_pane_linux.h",
   "new_file": true,
-  "published_sha256": "6ef68afbcbf3dbd8f168a13473ff9e0b07b1543e23c4b1442e9b1653dfb7ddde"
+  "published_sha256": "0171da658cc0ab1d51027d98f028a00a058018a2368575b148d373d12bf9c9c3"
  },
  {
   "path": "chrome/browser/ui/views/frame/browser_native_widget_mac.mm",

@@ -31,7 +31,7 @@
   },
   "local_patch": {
     "path": "helium-dual-window.patch",
-    "sha256": "e809c02fd3cbf6c07711f9eaa7ef6306769c68eb0c4378c4576967725e7752ec",
+    "sha256": "04b4ad85162c3c32432556274e50197eff3cd088e3a28eb832a04e83725bb07b",
     "files": 104,
     "applies_to": "Helium 0.20.1.1 source after Helium's own prepare steps (patches, domain and name substitution, translations)"
   },
@@ -63,5 +63,66 @@
       "license": "Apache-2.0",
       "distributed_with_dual": false
     }
+  },
+  "linux": {
+    "status": "preview",
+    "release": "Dual 6.4.0 for Linux (6.4.0-linux-preview)",
+    "helium_linux": {
+      "url": "https://github.com/imputnet/helium-linux.git",
+      "tag": "0.20.1.1",
+      "commit": "473c0f72d7db2e8492f0fa975b8544bc719bb027"
+    },
+    "helium_chromium_commit": "f29a25968e483f8bb85e47829ccd487bbe229199",
+    "chromium_archives": [
+      {
+        "archive": "chromium-156.0.8078.47-base.tar.zst",
+        "sha256": "d086d3b8c01b6d192bb54383459979641d2fa57e7c2599b9cb1f70b96c6a10be",
+        "bytes": 1983006019
+      },
+      {
+        "archive": "chromium-156.0.8078.47-linux-x64.tar.zst",
+        "url": "https://tarballs.imput.net/chromium-156.0.8078.47/chromium-156.0.8078.47-linux-x64.tar.zst",
+        "hashes": "https://github.com/imputnet/chromium-tarballs/releases/download/chromium-156.0.8078.47/chromium-156.0.8078.47-linux-x64.tar.zst.hashes",
+        "sha256": "7a4026f47b473314709d1289759af5ba9c13745ae0b72650727b47429d780c0a",
+        "bytes": 1198034067
+      }
+    ],
+    "patches": [
+      {
+        "path": "linux/dual-0.20.1.1-linux.patch",
+        "sha256": "2c9dbc35f00c3b862a93e6f68a8e5c13fae15b122d6e2c64babc4ef178353237",
+        "files": 90,
+        "made_by": "linux/make_linux_patch.py from the files helium-dual-window.patch changes, without the parts only macOS builds"
+      },
+      {
+        "path": "linux/linux-identity.patch",
+        "sha256": "56b7f18f5b84c3218433e6e3afab7f176432c44a651dc54edb44741bb39d8c9f",
+        "files": 3
+      }
+    ],
+    "arm64_host_only": {
+      "script": "linux/toolchain-arm64.sh",
+      "patch": {
+        "path": "linux/fix-compiling-on-arm64.patch",
+        "sha256": "e731e46abeab3418ae571da8afe72259b6a59cec1184cd6ca85e20d92e7d7154",
+        "from": "imputnet/helium-linux 0.18.3.1 (0e4e30b0a7c612182e255790fe7eaa4ccfcab15f), patches/ungoogled-chromium/portablelinux/fix-compiling-on-arm64.patch, unchanged"
+      },
+      "nodejs": "24.12.0",
+      "typescript": "@typescript/typescript-linux-arm64@7.0.2",
+      "esbuild": "infra/3pp/tools/esbuild/linux-arm64 version:3@0.28.2.chromium.2"
+    },
+    "build": {
+      "config": "helium-linux write_gn_args: flags.gn + flags.linux.gn (is_official_build=true, use_sysroot=true), no PGO (chrome_pgo_phase=0)",
+      "args": {
+        "arm64": "linux/args-arm64.gn",
+        "x64": "linux/args-x64.gn"
+      },
+      "host": "Debian 13 (trixie) arm64; the x86_64 build is cross-compiled there",
+      "targets": [
+        "linux arm64",
+        "linux x86_64"
+      ]
+    },
+    "packaging": "linux/package.sh (bundles extensions/ and the translation program built by translate-host/build_linux.sh)"
   }
 }

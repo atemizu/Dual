@@ -5145,7 +5145,7 @@
 +#endif  // CHROME_BROWSER_UI_HELIUM_HELIUM_DUAL_BROWSER_H_
 --- /dev/null
 +++ b/chrome/browser/ui/helium/helium_dual_browser_linux.cc
-@@ -0,0 +1,2390 @@
+@@ -0,0 +1,2420 @@
 +// Created by Dual contributors on 2026-10-23. Licensed under GPL-3.0; see the
 +// LICENSE file.
 +//
@@ -5409,6 +5409,11 @@
 +  gfx::Rect GetWindowBoundsForClientBounds(
 +      const gfx::Rect& client_bounds) const override {
 +    return client_bounds;
++  }
++  // The window is never smaller than its panes need (HostContents); the
++  // desktop gets this as the window's minimum size.
++  gfx::Size GetMinimumSize() const override {
++    return widget_->client_view()->GetMinimumSize();
 +  }
 +  int NonClientHitTest(const gfx::Point& point) override;
 +
@@ -5680,10 +5685,11 @@
 +    const bool both = browsers_[0] && browsers_[1];
 +    if (both && !hidden_[0] && !hidden_[1]) {
 +      const int available = std::max(0, area.width() - kDividerWidth);
-+      const int minimum = std::min(kMinimumPaneWidth, available / 2);
++      const int left_minimum = std::min(PaneMinimumWidth(0), available / 2);
++      const int right_minimum = std::min(PaneMinimumWidth(1), available / 2);
 +      const int left_width =
 +          std::clamp(static_cast<int>(std::round(available * ratio_)),
-+                     minimum, available - minimum);
++                     left_minimum, available - right_minimum);
 +      rects[0] = gfx::Rect(area.x(), area.y(), left_width, area.height());
 +      const int right_x = rects[0].right() + kDividerWidth;
 +      rects[1] = gfx::Rect(right_x, area.y(),
@@ -5744,6 +5750,12 @@
 +    }
 +    base::AutoReset<bool> laying_out(&laying_out_, true);
 +    relayout_timer_.Stop();
++    // The window's own limit follows the panes' (it changes with what their
++    // toolbars hold).
++    if (const gfx::Size minimum = MinimumSize(); minimum != reported_minimum_) {
++      reported_minimum_ = minimum;
++      widget_->OnSizeConstraintsChanged();
++    }
 +    const std::array<gfx::Rect, 2> rects = ComputePaneRects();
 +    const gfx::Rect area = PaneArea();
 +    const bool both = browsers_[0] && browsers_[1];
@@ -5790,11 +5802,27 @@
 +    }
 +  }
 +
++  // The narrowest a pane can be: the limit shared with macOS, or more when
++  // the pane's own contents need it (the pane whose toolbar carries the
++  // window's buttons). A pane is never laid out narrower than its widget's
++  // minimum, so a narrower place would push its far side out of the window.
++  int PaneMinimumWidth(size_t side) const {
++    auto* view = browsers_[side]
++                     ? BrowserView::GetBrowserViewForBrowser(browsers_[side])
++                     : nullptr;
++    if (!view || !view->GetWidget()) {
++      return kMinimumPaneWidth;
++    }
++    return std::max(kMinimumPaneWidth,
++                    view->GetWidget()->GetMinimumSize().width());
++  }
++
 +  gfx::Size MinimumSize() const {
 +    const int edge = 2 * kResizeEdgeInset;
 +    const bool both = browsers_[0] && browsers_[1];
-+    const int width = both ? 2 * kMinimumPaneWidth + kDividerWidth
-+                           : kMinimumPaneWidth + RailWidth();
++    const int width =
++        both ? PaneMinimumWidth(0) + PaneMinimumWidth(1) + kDividerWidth
++             : PaneMinimumWidth(browsers_[0] ? 0 : 1) + RailWidth();
 +    return gfx::Size(width + edge, kMinimumPaneHeight + kResizeEdgeInset);
 +  }
 +
@@ -7053,6 +7081,8 @@
 +  bool maximize_on_show_ = false;
 +  bool was_fullscreen_ = false;
 +  bool laying_out_ = false;
++  // The window's minimum size as last given to the window.
++  gfx::Size reported_minimum_;
 +  bool activating_ = false;
 +  std::optional<gfx::Rect> pending_bounds_;
 +  std::array<base::CallbackListSubscription, 2> close_subscriptions_;
@@ -12890,7 +12920,7 @@
 +@end
 --- /dev/null
 +++ b/chrome/browser/ui/views/frame/browser_native_widget_dual_pane_linux.cc
-@@ -0,0 +1,178 @@
+@@ -0,0 +1,187 @@
 +// Created by Dual contributors on 2026-10-23. Licensed under GPL-3.0; see the
 +// LICENSE file.
 +
@@ -13069,9 +13099,18 @@
 +void BrowserNativeWidgetDualPane::EndMoveLoop() {
 +  helium_dual::EndHostMoveLoop(browser_view_);
 +}
++
++// The shared window sets a hidden pane to its tab strip's width; the browser
++// inside would otherwise keep it as wide as a browser can be, past the strip.
++gfx::Size BrowserNativeWidgetDualPane::GetMinimumSize() const {
++  if (helium_dual::IsPaneHidden(browser_view_.get())) {
++    return gfx::Size();
++  }
++  return views::NativeWidgetAura::GetMinimumSize();
++}
 --- /dev/null
 +++ b/chrome/browser/ui/views/frame/browser_native_widget_dual_pane_linux.h
-@@ -0,0 +1,75 @@
+@@ -0,0 +1,79 @@
 +// Created by Dual contributors on 2026-10-23. Licensed under GPL-3.0; see the
 +// LICENSE file.
 +
@@ -13137,6 +13176,10 @@
 +      views::Widget::MoveLoopSource source,
 +      views::Widget::MoveLoopEscapeBehavior escape_behavior) override;
 +  void EndMoveLoop() override;
++
++  // aura::WindowDelegate:
++  // A hidden pane is its tab strip alone, narrower than a browser can be.
++  gfx::Size GetMinimumSize() const override;
 +
 + protected:
 +  ~BrowserNativeWidgetDualPane() override;

@@ -24,9 +24,18 @@ Dual 6.3.0 は公開しなかった。6.3.0 の変更（下の節）はすべて
 - Chromium 156 で名前や引数が変わったものに合わせた：`BrowserInitState::From(&*browser_window_)`、`UnloadController` の `TryToCloseWindow` → `RunBeforeUnloadForShutdown`、`ResetTryToCloseWindow` → `ResetBeforeUnloadForShutdown`、縦タブの `SetFloatingStyleForLayout(style, radius, below_toolbar)`。
 - 0.18.3.1 で必要だった `third_party/devtools-frontend/src/scripts/build/build_inspector_overlay.py` の変更は、0.20.1.1 では要らなくなったので外した。
 
-### Linux への移植（未公開、2026-10-19〜23）
+### Linux への移植（2026-10-19〜25、プレビュー版として公開）
 
-- このパッチには、Dual を Linux で動かすための変更も入っている。Linux 版はまだ公開していない。
+- このパッチには、Dual を Linux で動かすための変更も入っている。2026-10-25 に、Linux 版（x86_64・arm64）をプレビュー版として公開した。ビルド手順は `BUILDING-linux.md`。
+- Linux 版は、このパッチから macOS だけが使う部分を除いた `linux/dual-0.20.1.1-linux.patch` を、helium-linux 0.20.1.1 で準備したソースに当てて作る（`linux/make_linux_patch.py` で作る。中身の変更はこのパッチと同じ）。
+- Linux 版だけの変更として `linux/linux-identity.patch`（3ファイル）がある。設定フォルダ（`chrome_paths_linux.cc`、`~/.config/dual-browser`）、デスクトップ エントリの名前（`channel_info_posix.cc`、`dual-browser.desktop`、環境変数 `DUAL_DESKTOP`）、アイコン名（`shell_integration_linux.cc`、`dual-browser`）を Helium と別にし、同じ機械に Helium があっても設定が混ざらないようにした。各ファイルの先頭に改変の表示を加えている。
+- 翻訳プログラムは Linux では CPU で動き、同時に解く依頼は2本。モデルは `$XDG_DATA_HOME/dual-translation`（通常は `~/.local/share/dual-translation`）に置く。ダウンロードには、実行時に読み込むシステムの libcurl を使う。
+- 公開前の確認で直したこと（2026-10-25。どれも macOS 版のビルドには含まれないファイル）：
+  - 仕切りを右へ寄せると、右のペインの窓のボタン（閉じるなど）とタブバーが窓の右端の外へはみ出していた。Linux では右のペインのツールバーに窓のボタンが入るので、ペインの実際の最小幅（この確認で 400）が仕切りの下限（280）より大きく、ペインが下限の幅まで縮まなかったため。仕切りの下限を、左右それぞれのペインの実際の最小幅にした。
+  - 窓の最小の大きさを、デスクトップに伝えていなかった（外枠の `FrameView` が最小の大きさを返していなかった）。外枠が、2つのペインが必要とする幅（上の最小幅の合計）を最小の大きさとして返すようにし、ペインの中身で変わったときは伝え直す。
+  - 隠したペインが細い帯の幅まで縮まず、帯の位置から窓の外へはみ出していた（帯にタブ名の頭が切れて見えていた）。ペインの窓（aura）は中のブラウザの最小幅より狭くならないため。隠しているあいだは、ペインの最小の大きさを外す（`browser_native_widget_dual_pane_linux.{h,cc}` の `GetMinimumSize`）。
+- 同日、翻訳の拡張機能（1.0.1）：ポップアップで「原文に戻す」を押したあと、ポップアップが訳文を見て判定したページの言語（「このページは日本語のようです」）のままで、反対向きの翻訳を勧めていた。戻したあとにページの言語を判定し直す（`popup.js`）。Linux 版に入れた。macOS 版には次の版で入る（6.4.0 の DMG の拡張機能は 1.0.0）。
+- このため、リポジトリの `helium-dual-window.patch` は、タグ `v6.4.0`（macOS 版 6.4.0 のソース）のものと、Linux だけがビルドする3ファイル（`helium_dual_browser_linux.cc`、`browser_native_widget_dual_pane_linux.{h,cc}`）だけが違う。
 - 新規：`chrome/browser/ui/helium/helium_dual_browser_linux.cc`（左右のペインと外枠、仕切り、隠す・戻す、フレームレス モードの帯）、`chrome/browser/ui/views/frame/browser_native_widget_dual_pane_linux.{h,cc}`（外枠の中のペイン）、`chrome/browser/extensions/helium_dual_bundled_extensions_linux.cc`（実行ファイルの隣の `dual-extensions/` から同梱の拡張機能を読む）。
 - macOS 用の宣言だった `helium_dual_browser_mac.h` を `helium_dual_browser.h` に改名し、Linux と共通にした。Dual のペインに関わる `#if BUILDFLAG(IS_MAC)` の多くを Linux にも広げ、Linux 用の窓枠（`browser_frame_view_linux.cc`、`opaque_browser_frame_view.cc`、`browser_frame_view.cc`、`browser_native_widget_aura_linux.cc`、`frame/BUILD.gn`）とタブのドラッグ（`tab_drag_controller.cc`）を合わせた。macOS 版の動作は変えていない。
 
